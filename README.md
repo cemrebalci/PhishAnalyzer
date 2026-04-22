@@ -1,5 +1,5 @@
-[
-](https://github.com/cemrebalci/PhishAnalyzer/blob/afec125887e156d2472f71896560095e751f0139/Gemini_Generated_Image_and502and502and5.png)
+![image alt](https://github.com/cemrebalci/PhishAnalyzer/blob/afec125887e156d2472f71896560095e751f0139/Gemini_Generated_Image_and502and502and5.png)
+
 # PhishAnalyzer 🛡️
 ### AI-Powered Phishing URL Detection & Threat Analysis Platform
 
