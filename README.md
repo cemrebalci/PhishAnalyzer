@@ -1,5 +1,6 @@
-# PhishAnalyzer 🛡️
-### AI-Powered Phishing URL Detection & Threat Analysis Platform
+
+## PhishAnalyzer 
+AI-Powered Phishing URL Detection & Threat Analysis Platform
 
 ## Proje Hakkında
 PhishAnalyzer, makine öğrenmesi kullanarak URL'lerin
