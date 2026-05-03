@@ -1,7 +1,7 @@
 from django.urls import path
-from . import views
-from .views import URLScanView
+from .views import URLScanView, DashboardView
 
 urlpatterns = [
     path('scan/', URLScanView.as_view()),
+    path('dashboard/', DashboardView.as_view()),
 ]

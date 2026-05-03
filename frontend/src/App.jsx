@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import axios from 'axios'
+import Dashboard from './pages/Dashboard'
 
 function App() {
+  const [page, setPage] = useState('home')
   const [url, setUrl] = useState('')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -29,87 +31,87 @@ function App() {
   }
 
   return (
-    <div className='min-h-screen bg-gray-900 text-white flex flex-col items-center pt-20 px-4'>
+    <div className='min-h-screen bg-gray-900 text-white'>
 
-      {/* Başlık */}
-      <h1 className='text-5xl font-bold text-cyan-400 mb-2'>
-        🛡️ PhishAnalyzer
-      </h1>
-      <p className='text-gray-400 mb-10 text-lg'>
-        AI destekli phishing URL analiz platformu
-      </p>
-
-      {/* URL Giriş */}
-      <div className='w-full max-w-2xl'>
-        <input
-          type='text'
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder='https://şüpheli-site.com'
-          className='w-full p-4 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-cyan-400 text-lg'
-        />
+      {/* Navbar */}
+      <nav className='bg-gray-800 p-4 flex gap-6 border-b border-gray-700'>
         <button
-          onClick={handleScan}
-          disabled={loading}
-          className='mt-3 w-full py-3 bg-cyan-500 hover:bg-cyan-600 rounded-lg font-bold text-lg disabled:opacity-50 transition-colors'
+          onClick={() => setPage('home')}
+          className={`font-bold text-lg ${page === 'home' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'}`}
         >
-          {loading ? '⏳ Analiz Ediliyor...' : '🔍 Analiz Et'}
+          🛡️ Analiz
         </button>
-      </div>
+        <button
+          onClick={() => setPage('dashboard')}
+          className={`font-bold text-lg ${page === 'dashboard' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'}`}
+        >
+          📊 Dashboard
+        </button>
+      </nav>
 
-      {/* Hata */}
-      {error && (
-        <p className='mt-4 text-red-400 text-lg'>{error}</p>
-      )}
+      {/* Dashboard Sayfası */}
+      {page === 'dashboard' && <Dashboard />}
 
-      {/* Sonuç */}
-      {result && (
-        <div className={`mt-8 w-full max-w-2xl border rounded-xl p-6 ${
-          result.is_phishing
-            ? 'bg-red-900 border-red-500'
-            : 'bg-green-900 border-green-500'
-        }`}>
+      {/* Ana Sayfa */}
+      {page === 'home' && (
+        <div className='flex flex-col items-center pt-20 px-4'>
 
-          {/* Başlık */}
-          <div className='flex items-center gap-3 mb-4'>
-            <span className='text-4xl'>
-              {result.is_phishing ? '⚠️' : '✅'}
-            </span>
-            <h2 className={`text-2xl font-bold ${
-              result.is_phishing ? 'text-red-400' : 'text-green-400'
-            }`}>
-              {result.is_phishing
-                ? 'PHİSHİNG TESPİT EDİLDİ'
-                : 'GÜVENLİ GÖRÜNÜYOR'}
-            </h2>
-          </div>
-
-          {/* Skor */}
-          <p className='text-gray-300 text-lg mb-4'>
-            {result.is_phishing ? 'Tehdit Skoru:' : 'Güvenlik Skoru:'}
-            <span className={`ml-2 font-bold text-2xl ${
-              result.is_phishing ? 'text-red-400' : 'text-green-400'
-            }`}>
-              {result.is_phishing
-                ? `%${result.confidence}`
-                : `%${(100 - result.confidence).toFixed(0)}`}
-            </span>
+          <h1 className='text-5xl font-bold text-cyan-400 mb-2'>
+            🛡️ PhishAnalyzer
+          </h1>
+          <p className='text-gray-400 mb-10 text-lg'>
+            AI destekli phishing URL analiz platformu
           </p>
 
-          {/* Açıklamalar */}
-          {result.explanations?.length > 0 && (
-            <div>
-              <h3 className='font-bold text-gray-200 mb-2 text-lg'>
-                Neden Tehlikeli?
-              </h3>
-              <ul className='space-y-2'>
-                {result.explanations.map((exp, i) => (
-                  <li key={i} className='text-gray-300 flex gap-2'>
-                    <span>•</span>
-                    <span>{exp}</span>
-                  </li>
-                ))}
-              </ul>
+          <div className='w-full max-w-2xl'>
+            <input
+              type='text'
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder='https://şüpheli-site.com'
+              className='w-full p-4 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-cyan-400 text-lg'
+            />
+            <button
+              onClick={handleScan}
+              disabled={loading}
+              className='mt-3 w-full py-3 bg-cyan-500 hover:bg-cyan-600 rounded-lg font-bold text-lg disabled:opacity-50 transition-colors'
+            >
+              {loading ? '⏳ Analiz Ediliyor...' : '🔍 Analiz Et'}
+            </button>
+          </div>
+
+          {error && <p className='mt-4 text-red-400 text-lg'>{error}</p>}
+
+          {result && (
+            <div className={`mt-8 w-full max-w-2xl border rounded-xl p-6 ${
+              result.is_phishing ? 'bg-red-900 border-red-500' : 'bg-green-900 border-green-500'
+            }`}>
+              <div className='flex items-center gap-3 mb-4'>
+                <span className='text-4xl'>{result.is_phishing ? '⚠️' : '✅'}</span>
+                <h2 className={`text-2xl font-bold ${result.is_phishing ? 'text-red-400' : 'text-green-400'}`}>
+                  {result.is_phishing ? 'PHİSHİNG TESPİT EDİLDİ' : 'GÜVENLİ GÖRÜNÜYOR'}
+                </h2>
+              </div>
+
+              <p className='text-gray-300 text-lg mb-4'>
+                {result.is_phishing ? 'Tehdit Skoru:' : 'Güvenlik Skoru:'}
+                <span className={`ml-2 font-bold text-2xl ${result.is_phishing ? 'text-red-400' : 'text-green-400'}`}>
+                  {result.is_phishing ? `%${result.confidence}` : `%${(100 - result.confidence).toFixed(0)}`}
+                </span>
+              </p>
+
+              {result.explanations?.length > 0 && (
+                <div>
+                  <h3 className='font-bold text-gray-200 mb-2 text-lg'>Neden Tehlikeli?</h3>
+                  <ul className='space-y-2'>
+                    {result.explanations.map((exp, i) => (
+                      <li key={i} className='text-gray-300 flex gap-2'>
+                        <span>•</span><span>{exp}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
 

@@ -67,7 +67,7 @@ else:
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'phishanalyzer',
             'USER': 'cemrebalci',
-            'PASSWORD': '',
+            'PASSWORD': 'Cemre.20',
             'HOST': 'localhost',
             'PORT': '5432',
         }
