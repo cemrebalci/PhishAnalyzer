@@ -5,8 +5,8 @@ import os
 from urllib.parse import urlparse
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, '../../../model/phishanalyzer_model.pkl')
-FEATURES_PATH = os.path.join(BASE_DIR, '../../../model/phishanalyzer_features.pkl')
+MODEL_PATH = os.path.join(BASE_DIR, '../model/phishanalyzer_model.pkl')
+FEATURES_PATH = os.path.join(BASE_DIR, '../model/phishanalyzer_features.pkl')
 
 try:
     model = joblib.load(MODEL_PATH)
