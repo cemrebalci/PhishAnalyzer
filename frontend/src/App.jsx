@@ -17,7 +17,7 @@ function App() {
     setResult(null)
     try {
       const res = await axios.post(
-        'http://localhost:8000/api/scan/',
+        'https://phishanalyzer-production.up.railway.app/api/scan/',
         { url }
       )
       setResult(res.data)
