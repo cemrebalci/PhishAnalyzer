@@ -1,9 +1,5 @@
-# 🛡️ PhishAnalyzer
+# <img src="logo.png" alt="PhishAnalyzer Logo" width="50" style="border-radius: 50%; vertical-align: middle;"/> PhishAnalyzer
 ### AI-Powered Phishing URL Detection & Threat Analysis Platform
-
-<p align="center">
-  <img src="logo.png" alt="PhishAnalyzer Logo" width="200"/>
-</p>
 
 ## Proje Hakkında
 PhishAnalyzer, makine öğrenmesi kullanarak URL'lerin phishing (kimlik avı) olup olmadığını tespit eden, neden tehlikeli olduğunu açıklayan ve Chrome eklentisi ile her sitede otomatik koruma sağlayan bir web platformudur.
