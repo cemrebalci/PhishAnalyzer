@@ -19,9 +19,11 @@ except Exception as e:
 
 
 def predict_url(url):
+    from urllib.parse import urlparse
     parsed = urlparse(url)
     domain = parsed.netloc.lower().replace('www.', '')
-
+    
+    # Güvenilir TLD'lerle biten bilinen markalar
     trusted_brands = [
         'google.com', 'youtube.com', 'facebook.com',
         'twitter.com', 'instagram.com', 'linkedin.com',
@@ -32,6 +34,18 @@ def predict_url(url):
         'twitch.tv', 'tiktok.com', 'whatsapp.com'
     ]
 
+    # Turkiye kurumsal domainleri
+trusted_tlds = ['.edu.tr', '.gov.tr', '.k12.tr', '.bel.tr']
+for tld in trusted_tlds:
+    if domain.endswith(tld):
+        return {
+            'is_phishing': False,
+            'confidence': 5.0,
+            'explanations': [],
+            'features': {}
+        }
+    
+    # Domain sonunda veya içinde güvenilir marka varsa güvenli say
     for brand in trusted_brands:
         if domain == brand or domain.endswith('.' + brand):
             return {
@@ -40,13 +54,30 @@ def predict_url(url):
                 'explanations': [],
                 'features': {}
             }
-
+]
+    parsed = urlparse(url)
+    domain = parsed.netloc.lower().replace('www.', '')
+    
+    if domain in safe_domains:
+        return {
+            'is_phishing': False,
+            'confidence': 5.0,
+            'explanations': [],
+            'features': {}
+        }
+    
+    # Normal akış
     features_dict = extract_features(url)
-    feature_values = [features_dict[f] for f in feature_names]
+
+    feature_values = [
+        features_dict[f] for f in feature_names
+    ]
     X = np.array([feature_values])
+
     prediction = model.predict(X)[0]
     probability = model.predict_proba(X)[0]
     confidence = round(float(max(probability)) * 100, 2)
+
     explanations = explain_prediction(url, features_dict)
 
     return {
@@ -58,42 +89,57 @@ def predict_url(url):
 
 
 def extract_features(url):
+    """URL'den model için özellikler çıkarır"""
     parsed = urlparse(url)
+
     features = {
         'URLLength': len(url),
         'IsHTTPS': 1 if url.startswith('https') else 0,
         'NoOfSubDomain': url.count('.') - 1,
-        'IsDomainIP': 1 if re.match(r'\d+\.\d+\.\d+\.\d+', parsed.netloc) else 0,
+        'IsDomainIP': 1 if re.match(
+            r'\d+\.\d+\.\d+\.\d+',
+            parsed.netloc) else 0,
         'HasObfuscation': 1 if '%' in url else 0,
         'NoOfObfuscatedChar': url.count('%'),
         'HasPasswordField': 1 if 'password' in url.lower() else 0,
         'Bank': 1 if 'bank' in url.lower() else 0,
         'Pay': 1 if 'pay' in url.lower() else 0,
         'Crypto': 1 if 'crypto' in url.lower() else 0,
-        'DegitRatioInURL': sum(c.isdigit() for c in url) / len(url) if len(url) > 0 else 0,
+        'DegitRatioInURL': sum(c.isdigit() for c in url)
+            / len(url) if len(url) > 0 else 0,
         'NoOfAmpersandInURL': url.count('&'),
         'URLSimilarityIndex': calculate_similarity(url),
         'TLDLegitimateProb': get_tld_prob(url),
     }
+
     return features
 
 
 def calculate_similarity(url):
+    """Marka taklidi skorunu hesaplar"""
     parsed = urlparse(url)
     domain = parsed.netloc.lower()
+    
     brands = {
-        'paypal': 'paypal.com', 'google': 'google.com',
-        'amazon': 'amazon.com', 'facebook': 'facebook.com',
-        'apple': 'apple.com', 'netflix': 'netflix.com',
-        'microsoft': 'microsoft.com', 'twitter': 'twitter.com'
+        'paypal': 'paypal.com',
+        'google': 'google.com',
+        'amazon': 'amazon.com',
+        'facebook': 'facebook.com',
+        'apple': 'apple.com',
+        'netflix': 'netflix.com',
+        'microsoft': 'microsoft.com',
+        'twitter': 'twitter.com'
     }
+    
     for brand, real_domain in brands.items():
         if brand in domain and real_domain not in domain:
             return 90.0
+    
     return 10.0
 
 
 def get_tld_prob(url):
+    """TLD meşruiyet skoru"""
     safe_tlds = ['.com', '.org', '.net', '.edu', '.gov']
     risky_tlds = ['.xyz', '.tk', '.ml', '.ga', '.cf']
     for tld in safe_tlds:
@@ -106,27 +152,52 @@ def get_tld_prob(url):
 
 
 def explain_prediction(url, features_dict):
+    """Neden phishing olduğunu açıklar"""
     explanations = []
+
     if features_dict['URLLength'] > 75:
-        explanations.append(f'URL çok uzun ({features_dict["URLLength"]} karakter)')
+        explanations.append(
+            f'URL çok uzun ({features_dict["URLLength"]} karakter)'
+        )
+
     if features_dict['IsHTTPS'] == 0:
-        explanations.append('HTTPS kullanmıyor — güvensiz bağlantı')
+        explanations.append(
+            'HTTPS kullanmıyor — güvensiz bağlantı'
+        )
+
     if features_dict['NoOfSubDomain'] > 3:
-        explanations.append(f'Çok fazla alt domain ({features_dict["NoOfSubDomain"]} adet)')
+        explanations.append(
+            f'Çok fazla alt domain ({features_dict["NoOfSubDomain"]} adet)'
+        )
+
     if features_dict['IsDomainIP'] == 1:
-        explanations.append('Domain yerine IP adresi kullanılmış')
+        explanations.append(
+            'Domain yerine IP adresi kullanılmış'
+        )
+
     if features_dict['URLSimilarityIndex'] > 80:
-        explanations.append('Marka taklidi tespit edildi')
+        explanations.append(
+            'Marka taklidi tespit edildi'
+        )
+
     if features_dict['HasPasswordField'] == 1:
-        explanations.append('Sahte şifre giriş formu tespit edildi')
+        explanations.append(
+            'Sahte şifre giriş formu tespit edildi'
+        )
+
     if features_dict['Bank'] == 1:
         explanations.append('Banka taklidi içeriyor')
+
     if features_dict['Pay'] == 1:
         explanations.append('Ödeme sistemi taklidi içeriyor')
+
     if features_dict['Crypto'] == 1:
         explanations.append('Kripto para dolandırıcılığı içeriyor')
+
     if features_dict['HasObfuscation'] == 1:
         explanations.append('Gizlenmiş/karartılmış karakterler var')
+
     if features_dict['TLDLegitimateProb'] < 0.3:
         explanations.append('Riskli domain uzantısı (.xyz, .tk gibi)')
+
     return explanations
