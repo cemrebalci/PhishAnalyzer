@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import URLScanInputSerializer, URLScanSerializer
 from .models import URLScan
-from .ml_utils import predict_url
+from .ml_utils import predict_url, GEMINI_API_KEY
 from django.utils import timezone
 from datetime import timedelta
 
@@ -11,9 +11,7 @@ from datetime import timedelta
 class URLScanView(APIView):
 
     def post(self, request):
-        serializer = URLScanInputSerializer(
-            data=request.data
-        )
+        serializer = URLScanInputSerializer(data=request.data)
 
         if not serializer.is_valid():
             return Response(
@@ -22,7 +20,6 @@ class URLScanView(APIView):
             )
 
         url = serializer.validated_data['url']
-
         result = predict_url(url)
 
         scan = URLScan.objects.create(
@@ -47,9 +44,7 @@ class DashboardView(APIView):
 
     def get(self, request):
         thirty_days_ago = timezone.now() - timedelta(days=30)
-        scans = URLScan.objects.filter(
-            scanned_at__gte=thirty_days_ago
-        )
+        scans = URLScan.objects.filter(scanned_at__gte=thirty_days_ago)
 
         total = scans.count()
         phishing = scans.filter(is_phishing=True).count()
@@ -77,11 +72,11 @@ class DashboardView(APIView):
             'daily': daily,
             'recent_threats': recent_threats
         })
-    
-    class ChatView(APIView):
+
+
+class ChatView(APIView):
 
     def post(self, request):
-        from .ml_utils import GEMINI_API_KEY
         from google import genai
 
         message = request.data.get('message', '')
@@ -101,7 +96,7 @@ class DashboardView(APIView):
         try:
             client = genai.Client(api_key=GEMINI_API_KEY)
             prompt = f"""
-Sen PhishAnalyzer'ın güvenlik asistanısın. Sadece siber güvenlik, 
+Sen PhishAnalyzer'ın güvenlik asistanısın. Sadece siber güvenlik,
 phishing, URL güvenliği ve internet güvenliği konularında yardım et.
 Türkçe cevap ver. Kısa ve anlaşılır ol.
 
@@ -113,6 +108,7 @@ Kullanıcı sorusu: {message}
             )
             return Response({'reply': response.text})
         except Exception as e:
+            print(f"Chat Gemini hatası: {e}")
             return Response(
                 {'reply': 'Bir hata oluştu, tekrar deneyin.'},
                 status=status.HTTP_200_OK
