@@ -1,6 +1,7 @@
 import re
 import joblib
 import numpy as np
+import pandas as pd
 import os
 from urllib.parse import urlparse
 from google import genai
@@ -87,14 +88,15 @@ def predict_url(url):
             }
 
     features_dict = extract_features(url)
-    feature_values = [features_dict[f] for f in feature_names]
-    X = np.array([feature_values])
+    
+    # Feature names uyarısını düzelt — DataFrame kullan
+    X = pd.DataFrame([features_dict])[feature_names]
 
     prediction = model.predict(X)[0]
     probability = model.predict_proba(X)[0]
     confidence = round(float(max(probability)) * 100, 2)
     explanations = explain_prediction(url, features_dict)
-    ai_explanation = generate_ai_explanation(url, explanations)
+    ai_explanation = generate_ai_explanation(url, explanations) if explanations else None
 
     return {
         'is_phishing': bool(prediction == 0),
