@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import axios from 'axios'
 import Dashboard from './pages/Dashboard'
+import Chat from './pages/Chat'
 
 function App() {
   const [page, setPage] = useState('home')
@@ -33,12 +34,19 @@ function App() {
   return (
     <div className='min-h-screen bg-gray-900 text-white'>
 
+      {/* Navbar */}
       <nav className='bg-gray-800 p-4 flex gap-6 border-b border-gray-700'>
         <button
           onClick={() => setPage('home')}
           className={`font-bold text-lg ${page === 'home' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'}`}
         >
           🛡️ Analiz
+        </button>
+        <button
+          onClick={() => setPage('chat')}
+          className={`font-bold text-lg ${page === 'chat' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'}`}
+        >
+          💬 PhishChat
         </button>
         <button
           onClick={() => setPage('dashboard')}
@@ -49,6 +57,7 @@ function App() {
       </nav>
 
       {page === 'dashboard' && <Dashboard />}
+      {page === 'chat' && <Chat />}
 
       {page === 'home' && (
         <div className='flex flex-col items-center pt-20 px-4'>
@@ -114,7 +123,7 @@ function App() {
               {result.ai_explanation && (
                 <div className='mt-4 p-4 bg-gray-800 rounded-lg border border-cyan-500'>
                   <h3 className='font-bold text-cyan-400 mb-2 text-lg'>
-                    🤖 AI Güvenlik Analizi
+                    🤖 Yapay Zeka Güvenlik Analizi
                   </h3>
                   <p className='text-gray-300 text-sm leading-relaxed'>
                     {result.ai_explanation}
