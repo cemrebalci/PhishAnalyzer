@@ -19,6 +19,7 @@ except Exception as e:
     feature_names = []
 
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+print(f"GEMINI_API_KEY durumu: {'Var' if GEMINI_API_KEY else 'YOK'}")
 
 
 def generate_ai_explanation(url, explanations):
