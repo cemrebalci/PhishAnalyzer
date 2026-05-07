@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import axios from 'axios'
 import Dashboard from './pages/Dashboard'
-import Chat from './pages/Chat'
 
 function App() {
   const [page, setPage] = useState('home')
@@ -9,6 +8,9 @@ function App() {
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [chatMessages, setChatMessages] = useState([])
+  const [chatInput, setChatInput] = useState('')
+  const [chatLoading, setChatLoading] = useState(false)
 
   const handleScan = async () => {
     if (!url) {
@@ -18,16 +20,43 @@ function App() {
     setLoading(true)
     setError('')
     setResult(null)
+    setChatMessages([])
     try {
       const res = await axios.post(
         'https://phishanalyzer-production.up.railway.app/api/scan/',
         { url }
       )
       setResult(res.data)
+      setChatMessages([{
+        role: 'ai',
+        text: `"${res.data.url}" adresini analiz ettim. Bu URL hakkında sorularınızı sorabilirsiniz. 🛡️`
+      }])
     } catch (err) {
       setError('Hata oluştu: ' + err.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const sendChat = async () => {
+    if (!chatInput.trim()) return
+
+    const userMsg = { role: 'user', text: chatInput }
+    setChatMessages(prev => [...prev, userMsg])
+    setChatInput('')
+    setChatLoading(true)
+
+    try {
+      const context = result ? `Analiz edilen URL: ${result.url}. Phishing: ${result.is_phishing ? 'Evet' : 'Hayır'}. Riskler: ${result.explanations?.join(', ')}` : ''
+      const res = await axios.post(
+        'https://phishanalyzer-production.up.railway.app/api/chat/',
+        { message: `${context}\n\nKullanıcı sorusu: ${chatInput}` }
+      )
+      setChatMessages(prev => [...prev, { role: 'ai', text: res.data.reply }])
+    } catch (err) {
+      setChatMessages(prev => [...prev, { role: 'ai', text: 'Bir hata oluştu.' }])
+    } finally {
+      setChatLoading(false)
     }
   }
 
@@ -43,12 +72,6 @@ function App() {
           🛡️ Analiz
         </button>
         <button
-          onClick={() => setPage('chat')}
-          className={`font-bold text-lg ${page === 'chat' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'}`}
-        >
-          💬 PhishChat
-        </button>
-        <button
           onClick={() => setPage('dashboard')}
           className={`font-bold text-lg ${page === 'dashboard' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'}`}
         >
@@ -57,7 +80,6 @@ function App() {
       </nav>
 
       {page === 'dashboard' && <Dashboard />}
-      {page === 'chat' && <Chat />}
 
       {page === 'home' && (
         <div className='flex flex-col items-center pt-20 px-4'>
@@ -74,6 +96,7 @@ function App() {
               type='text'
               value={url}
               onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleScan()}
               placeholder='https://şüpheli-site.com'
               className='w-full p-4 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:border-cyan-400 text-lg'
             />
@@ -89,47 +112,92 @@ function App() {
           {error && <p className='mt-4 text-red-400 text-lg'>{error}</p>}
 
           {result && (
-            <div className={`mt-8 w-full max-w-2xl border rounded-xl p-6 ${
-              result.is_phishing ? 'bg-red-900 border-red-500' : 'bg-green-900 border-green-500'
-            }`}>
+            <div className='mt-8 w-full max-w-2xl space-y-4'>
 
-              <div className='flex items-center gap-3 mb-4'>
-                <span className='text-4xl'>{result.is_phishing ? '⚠️' : '✅'}</span>
-                <h2 className={`text-2xl font-bold ${result.is_phishing ? 'text-red-400' : 'text-green-400'}`}>
-                  {result.is_phishing ? 'PHİSHİNG TESPİT EDİLDİ' : 'GÜVENLİ GÖRÜNÜYOR'}
-                </h2>
+              {/* Sonuç Kartı */}
+              <div className={`border rounded-xl p-6 ${
+                result.is_phishing ? 'bg-red-900 border-red-500' : 'bg-green-900 border-green-500'
+              }`}>
+                <div className='flex items-center gap-3 mb-4'>
+                  <span className='text-4xl'>{result.is_phishing ? '⚠️' : '✅'}</span>
+                  <h2 className={`text-2xl font-bold ${result.is_phishing ? 'text-red-400' : 'text-green-400'}`}>
+                    {result.is_phishing ? 'PHİSHİNG TESPİT EDİLDİ' : 'GÜVENLİ GÖRÜNÜYOR'}
+                  </h2>
+                </div>
+
+                <p className='text-gray-300 text-lg mb-4'>
+                  {result.is_phishing ? 'Tehdit Skoru:' : 'Güvenlik Skoru:'}
+                  <span className={`ml-2 font-bold text-2xl ${result.is_phishing ? 'text-red-400' : 'text-green-400'}`}>
+                    {result.is_phishing ? `%${result.confidence}` : `%${(100 - result.confidence).toFixed(0)}`}
+                  </span>
+                </p>
+
+                {result.explanations?.length > 0 && (
+                  <div className='mb-4'>
+                    <h3 className='font-bold text-gray-200 mb-2 text-lg'>Neden Tehlikeli?</h3>
+                    <ul className='space-y-2'>
+                      {result.explanations.map((exp, i) => (
+                        <li key={i} className='text-gray-300 flex gap-2'>
+                          <span>•</span><span>{exp}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {result.ai_explanation && (
+                  <div className='p-4 bg-gray-800 rounded-lg border border-cyan-500'>
+                    <h3 className='font-bold text-cyan-400 mb-2'>🤖 Yapay Zeka Güvenlik Analizi</h3>
+                    <p className='text-gray-300 text-sm leading-relaxed'>{result.ai_explanation}</p>
+                  </div>
+                )}
               </div>
 
-              <p className='text-gray-300 text-lg mb-4'>
-                {result.is_phishing ? 'Tehdit Skoru:' : 'Güvenlik Skoru:'}
-                <span className={`ml-2 font-bold text-2xl ${result.is_phishing ? 'text-red-400' : 'text-green-400'}`}>
-                  {result.is_phishing ? `%${result.confidence}` : `%${(100 - result.confidence).toFixed(0)}`}
-                </span>
-              </p>
-
-              {result.explanations?.length > 0 && (
-                <div className='mb-4'>
-                  <h3 className='font-bold text-gray-200 mb-2 text-lg'>Neden Tehlikeli?</h3>
-                  <ul className='space-y-2'>
-                    {result.explanations.map((exp, i) => (
-                      <li key={i} className='text-gray-300 flex gap-2'>
-                        <span>•</span><span>{exp}</span>
-                      </li>
-                    ))}
-                  </ul>
+              {/* Chat Kutusu */}
+              <div className='border border-gray-700 rounded-xl bg-gray-800'>
+                <div className='p-4 border-b border-gray-700'>
+                  <h3 className='font-bold text-cyan-400'>💬 Bu URL Hakkında Soru Sor</h3>
                 </div>
-              )}
 
-              {result.ai_explanation && (
-                <div className='mt-4 p-4 bg-gray-800 rounded-lg border border-cyan-500'>
-                  <h3 className='font-bold text-cyan-400 mb-2 text-lg'>
-                    🤖 Yapay Zeka Güvenlik Analizi
-                  </h3>
-                  <p className='text-gray-300 text-sm leading-relaxed'>
-                    {result.ai_explanation}
-                  </p>
+                <div className='p-4 space-y-3 max-h-64 overflow-y-auto'>
+                  {chatMessages.map((msg, i) => (
+                    <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-sm px-3 py-2 rounded-lg text-sm ${
+                        msg.role === 'user'
+                          ? 'bg-cyan-600 text-white'
+                          : 'bg-gray-700 text-gray-200'
+                      }`}>
+                        {msg.text}
+                      </div>
+                    </div>
+                  ))}
+                  {chatLoading && (
+                    <div className='flex justify-start'>
+                      <div className='bg-gray-700 px-3 py-2 rounded-lg text-gray-400 text-sm'>
+                        ⏳ Yanıt üretiliyor...
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
+
+                <div className='p-4 border-t border-gray-700 flex gap-2'>
+                  <input
+                    type='text'
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && sendChat()}
+                    placeholder='Bu URL hakkında bir şey sor...'
+                    className='flex-1 p-2 rounded-lg bg-gray-700 border border-gray-600 text-white text-sm focus:outline-none focus:border-cyan-400'
+                  />
+                  <button
+                    onClick={sendChat}
+                    disabled={chatLoading || !chatInput.trim()}
+                    className='px-4 py-2 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-sm font-bold disabled:opacity-50'
+                  >
+                    Gönder
+                  </button>
+                </div>
+              </div>
 
             </div>
           )}
