@@ -8,7 +8,6 @@ from django.utils import timezone
 from datetime import timedelta
 
 
-
 class URLScanView(APIView):
 
     def post(self, request):
@@ -39,9 +38,10 @@ class URLScanView(APIView):
             'is_phishing': result['is_phishing'],
             'confidence': result['confidence'],
             'explanations': result['explanations'],
+            'ai_explanation': result.get('ai_explanation'),
             'scanned_at': scan.scanned_at
         }, status=status.HTTP_200_OK)
-    
+
 
 class DashboardView(APIView):
 
