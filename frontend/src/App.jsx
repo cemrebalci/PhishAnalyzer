@@ -112,6 +112,19 @@ function App() {
                   </ul>
                 </div>
               )}
+
+              {/* AI Açıklaması */}
+              {result.ai_explanation && (
+                <div className='mt-4 p-4 bg-gray-800 rounded-lg border border-cyan-500'>
+                  <h3 className='font-bold text-cyan-400 mb-2 text-lg'>
+                    🤖 AI Güvenlik Analizi
+                  </h3>
+                  <p className='text-gray-300 text-sm leading-relaxed'>
+                    {result.ai_explanation}
+                  </p>
+                </div>
+              )}
+
             </div>
           )}
 
@@ -123,3 +136,4 @@ function App() {
 }
 
 export default App
+EOF
