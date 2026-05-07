@@ -9,3 +9,4 @@ xgboost
 gunicorn
 dj-database-url
 google-genai
+# model v2
