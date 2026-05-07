@@ -8,3 +8,4 @@ numpy
 xgboost
 gunicorn
 dj-database-url
+google-generativeai

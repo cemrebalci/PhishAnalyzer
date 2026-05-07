@@ -3,6 +3,7 @@ import joblib
 import numpy as np
 import os
 from urllib.parse import urlparse
+import google.generativeai as genai
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, '../model/phishanalyzer_model.pkl')
@@ -16,6 +17,33 @@ except Exception as e:
     print(f"❌ Model yüklenemedi: {e}")
     model = None
     feature_names = []
+
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+    print("✅ Gemini API bağlandı")
+
+
+def generate_ai_explanation(url, explanations):
+    if not GEMINI_API_KEY:
+        return None
+    try:
+        gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+        prompt = f"""
+Sen bir siber güvenlik uzmanısın. Aşağıdaki URL analiz sonuçlarına göre
+kullanıcıya kısa ve anlaşılır bir güvenlik açıklaması yaz. Türkçe yaz.
+Maksimum 2-3 cümle olsun.
+
+URL: {url}
+Tespit edilen riskler: {', '.join(explanations) if explanations else 'Belirgin risk yok'}
+
+Sadece açıklamayı yaz, başka bir şey ekleme.
+"""
+        response = gemini_model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        print(f"Gemini hatası: {e}")
+        return None
 
 
 def predict_url(url):
@@ -43,6 +71,7 @@ def predict_url(url):
                 'is_phishing': False,
                 'confidence': 5.0,
                 'explanations': [],
+                'ai_explanation': None,
                 'features': {}
             }
 
@@ -52,6 +81,7 @@ def predict_url(url):
                 'is_phishing': False,
                 'confidence': 5.0,
                 'explanations': [],
+                'ai_explanation': None,
                 'features': {}
             }
 
@@ -63,11 +93,13 @@ def predict_url(url):
     probability = model.predict_proba(X)[0]
     confidence = round(float(max(probability)) * 100, 2)
     explanations = explain_prediction(url, features_dict)
+    ai_explanation = generate_ai_explanation(url, explanations)
 
     return {
         'is_phishing': bool(prediction == 0),
         'confidence': confidence,
         'explanations': explanations,
+        'ai_explanation': ai_explanation,
         'features': features_dict
     }
 
@@ -145,3 +177,4 @@ def explain_prediction(url, features_dict):
     if features_dict['TLDLegitimateProb'] < 0.3:
         explanations.append('Riskli domain uzantısı (.xyz, .tk gibi)')
     return explanations
+EOF
