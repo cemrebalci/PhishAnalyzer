@@ -3,7 +3,7 @@ import joblib
 import numpy as np
 import os
 from urllib.parse import urlparse
-import google.generativeai as genai
+from google import genai
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, '../model/phishanalyzer_model.pkl')
@@ -20,7 +20,7 @@ except Exception as e:
 
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
+    client = genai.Client(api_key=GEMINI_API_KEY)
     print("✅ Gemini API bağlandı")
 
 

@@ -33,7 +33,6 @@ function App() {
   return (
     <div className='min-h-screen bg-gray-900 text-white'>
 
-      {/* Navbar */}
       <nav className='bg-gray-800 p-4 flex gap-6 border-b border-gray-700'>
         <button
           onClick={() => setPage('home')}
@@ -49,10 +48,8 @@ function App() {
         </button>
       </nav>
 
-      {/* Dashboard Sayfası */}
       {page === 'dashboard' && <Dashboard />}
 
-      {/* Ana Sayfa */}
       {page === 'home' && (
         <div className='flex flex-col items-center pt-20 px-4'>
 
@@ -86,6 +83,7 @@ function App() {
             <div className={`mt-8 w-full max-w-2xl border rounded-xl p-6 ${
               result.is_phishing ? 'bg-red-900 border-red-500' : 'bg-green-900 border-green-500'
             }`}>
+
               <div className='flex items-center gap-3 mb-4'>
                 <span className='text-4xl'>{result.is_phishing ? '⚠️' : '✅'}</span>
                 <h2 className={`text-2xl font-bold ${result.is_phishing ? 'text-red-400' : 'text-green-400'}`}>
@@ -101,7 +99,7 @@ function App() {
               </p>
 
               {result.explanations?.length > 0 && (
-                <div>
+                <div className='mb-4'>
                   <h3 className='font-bold text-gray-200 mb-2 text-lg'>Neden Tehlikeli?</h3>
                   <ul className='space-y-2'>
                     {result.explanations.map((exp, i) => (
@@ -113,7 +111,6 @@ function App() {
                 </div>
               )}
 
-              {/* AI Açıklaması */}
               {result.ai_explanation && (
                 <div className='mt-4 p-4 bg-gray-800 rounded-lg border border-cyan-500'>
                   <h3 className='font-bold text-cyan-400 mb-2 text-lg'>
