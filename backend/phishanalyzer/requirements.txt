@@ -3,7 +3,7 @@ djangorestframework
 django-cors-headers
 psycopg2-binary
 joblib
-scikit-learn
+scikit-learn==1.7.2
 numpy
 xgboost
 gunicorn
