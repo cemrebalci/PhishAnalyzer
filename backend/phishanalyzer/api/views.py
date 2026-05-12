@@ -61,9 +61,20 @@ class DashboardView(APIView):
                 'phishing': day_scans.filter(is_phishing=True).count()
             })
 
-        recent_threats = list(scans.filter(
-            is_phishing=True
-        ).values('url', 'confidence_score', 'scanned_at')[:5])
+        recent_threats_qs = scans.filter(is_phishing=True).order_by('-scanned_at')[:5]
+        recent_threats = []
+        for scan in recent_threats_qs:
+            try:
+                explanations = eval(scan.explanation) if scan.explanation else []
+                first_reason = explanations[0] if explanations else 'Şüpheli URL yapısı'
+            except:
+                first_reason = 'Şüpheli URL yapısı'
+            recent_threats.append({
+                'url': scan.url,
+                'confidence_score': scan.confidence_score,
+                'scanned_at': scan.scanned_at,
+                'reason': first_reason
+            })
 
         return Response({
             'total': total,
