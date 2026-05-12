@@ -4,6 +4,9 @@
   "version": "1.0",
   "description": "AI destekli phishing koruma - Her siteyi otomatik analiz eder",
   "permissions": ["activeTab", "storage"],
+  "host_permissions": [
+    "https://phishanalyzer-production.up.railway.app/*"
+  ],
   "content_scripts": [{
     "matches": ["<all_urls>"],
     "js": ["content.js"],
