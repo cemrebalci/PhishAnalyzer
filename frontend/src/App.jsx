@@ -8,46 +8,19 @@ function App() {
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [chatMessages, setChatMessages] = useState([])
-  const [chatInput, setChatInput] = useState('')
-  const [chatLoading, setChatLoading] = useState(false)
 
   const handleScan = async () => {
-    if (!url) { setError('Lutfen bir URL giriniz!'); return }
-    setLoading(true); setError(''); setResult(null); setChatMessages([])
+    if (!url) { setError('Lütfen bir URL giriniz!'); return }
+    setLoading(true); setError(''); setResult(null)
     try {
       const res = await axios.post(
         'https://phishanalyzer-production.up.railway.app/api/scan/',
         { url }
       )
       setResult(res.data)
-      setChatMessages([{
-        role: 'ai',
-        text: 'Bu URL hakkinda sorularinizi sorabilirsiniz.'
-      }])
     } catch (err) {
-      setError('Hata olustu: ' + err.message)
+      setError('Hata oluştu: ' + err.message)
     } finally { setLoading(false) }
-  }
-
-  const sendChat = async () => {
-    if (!chatInput.trim()) return
-    const userMsg = { role: 'user', text: chatInput }
-    setChatMessages(prev => [...prev, userMsg])
-    setChatInput('')
-    setChatLoading(true)
-    try {
-      const context = result
-        ? `URL: ${result.url}. Phishing: ${result.is_phishing ? 'Evet' : 'Hayir'}. Riskler: ${result.explanations?.join(', ')}`
-        : ''
-      const res = await axios.post(
-        'https://phishanalyzer-production.up.railway.app/api/chat/',
-        { message: `${context}\n\nSoru: ${chatInput}` }
-      )
-      setChatMessages(prev => [...prev, { role: 'ai', text: res.data.reply }])
-    } catch (err) {
-      setChatMessages(prev => [...prev, { role: 'ai', text: 'Bir hata olustu.' }])
-    } finally { setChatLoading(false) }
   }
 
   return (
@@ -99,7 +72,7 @@ function App() {
           {error && <p className='mt-4 text-red-400 text-lg'>{error}</p>}
 
           {result && (
-            <div className='mt-8 w-full max-w-2xl space-y-4 pb-10'>
+            <div className='mt-8 w-full max-w-2xl pb-10'>
               <div className={`border rounded-xl p-6 ${
                 result.is_phishing ? 'bg-red-900 border-red-500' : 'bg-green-900 border-green-500'
               }`}>
@@ -136,47 +109,6 @@ function App() {
                     <p className='text-gray-300 text-sm leading-relaxed'>{result.ai_explanation}</p>
                   </div>
                 )}
-              </div>
-
-              <div className='border border-gray-700 rounded-xl bg-gray-800'>
-                <div className='p-4 border-b border-gray-700'>
-                  <h3 className='font-bold text-cyan-400'>💬 Bu URL Hakkında Soru Sor</h3>
-                </div>
-                <div className='p-4 space-y-3 max-h-64 overflow-y-auto'>
-                  {chatMessages.map((msg, i) => (
-                    <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-sm px-3 py-2 rounded-lg text-sm ${
-                        msg.role === 'user' ? 'bg-cyan-600 text-white' : 'bg-gray-700 text-gray-200'
-                      }`}>
-                        {msg.text}
-                      </div>
-                    </div>
-                  ))}
-                  {chatLoading && (
-                    <div className='flex justify-start'>
-                      <div className='bg-gray-700 px-3 py-2 rounded-lg text-gray-400 text-sm'>
-                        ⏳ Yanıt üretiliyor...
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className='p-4 border-t border-gray-700 flex gap-2'>
-                  <input
-                    type='text'
-                    value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && sendChat()}
-                    placeholder='Bu URL hakkında bir şey sor...'
-                    className='flex-1 p-2 rounded-lg bg-gray-700 border border-gray-600 text-white text-sm focus:outline-none focus:border-cyan-400'
-                  />
-                  <button
-                    onClick={sendChat}
-                    disabled={chatLoading || !chatInput.trim()}
-                    className='px-4 py-2 bg-cyan-500 hover:bg-cyan-600 rounded-lg text-sm font-bold disabled:opacity-50'
-                  >
-                    Gönder
-                  </button>
-                </div>
               </div>
             </div>
           )}

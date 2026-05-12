@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import URLScanInputSerializer, URLScanSerializer
 from .models import URLScan
-from .ml_utils import predict_url, GEMINI_API_KEY
+from .ml_utils import predict_url
 from django.utils import timezone
 from datetime import timedelta
 
@@ -72,44 +72,3 @@ class DashboardView(APIView):
             'daily': daily,
             'recent_threats': recent_threats
         })
-
-
-class ChatView(APIView):
-
-    def post(self, request):
-        from google import genai
-
-        message = request.data.get('message', '')
-
-        if not message:
-            return Response(
-                {'error': 'Mesaj boş olamaz'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        if not GEMINI_API_KEY:
-            return Response(
-                {'reply': 'AI servisi şu an kullanılamıyor.'},
-                status=status.HTTP_200_OK
-            )
-
-        try:
-            client = genai.Client(api_key=GEMINI_API_KEY)
-            prompt = f"""
-Sen PhishAnalyzer'ın güvenlik asistanısın. Sadece siber güvenlik,
-phishing, URL güvenliği ve internet güvenliği konularında yardım et.
-Türkçe cevap ver. Kısa ve anlaşılır ol.
-
-Kullanıcı sorusu: {message}
-"""
-            response = client.models.generate_content(
-                model='gemini-flash-latest',
-                contents=prompt
-            )
-            return Response({'reply': response.text})
-        except Exception as e:
-            print(f"Chat Gemini hatası: {e}")
-            return Response(
-                {'reply': 'Bir hata oluştu, tekrar deneyin.'},
-                status=status.HTTP_200_OK
-            )
