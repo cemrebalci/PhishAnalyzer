@@ -2,6 +2,13 @@ import { useState } from 'react'
 import axios from 'axios'
 import Dashboard from './pages/Dashboard'
 
+const riskConfig = {
+  safe:   { bg: 'bg-green-900', border: 'border-green-500', text: 'text-green-400', badge: '🟢 Güvenli', icon: '✅', title: 'GÜVENLİ GÖRÜNÜYOR' },
+  low:    { bg: 'bg-lime-900', border: 'border-lime-500', text: 'text-lime-400', badge: '🟡 Düşük Risk', icon: '⚠️', title: 'DÜŞÜK RİSK TESPİT EDİLDİ' },
+  medium: { bg: 'bg-yellow-900', border: 'border-yellow-500', text: 'text-yellow-400', badge: '🟠 Orta Risk', icon: '⚠️', title: 'ŞÜPHELI SİTE TESPİT EDİLDİ' },
+  high:   { bg: 'bg-red-900', border: 'border-red-500', text: 'text-red-400', badge: '🔴 Yüksek Risk', icon: '🚨', title: 'PHİSHİNG TESPİT EDİLDİ' },
+}
+
 function App() {
   const [page, setPage] = useState('home')
   const [url, setUrl] = useState('')
@@ -22,6 +29,8 @@ function App() {
       setError('Hata oluştu: ' + err.message)
     } finally { setLoading(false) }
   }
+
+  const risk = result ? (riskConfig[result.risk_level] || riskConfig.high) : null
 
   return (
     <div className='min-h-screen bg-gray-900 text-white'>
@@ -71,22 +80,28 @@ function App() {
 
           {error && <p className='mt-4 text-red-400 text-lg'>{error}</p>}
 
-          {result && (
+          {result && risk && (
             <div className='mt-8 w-full max-w-2xl pb-10'>
-              <div className={`border rounded-xl p-6 ${
-                result.is_phishing ? 'bg-red-900 border-red-500' : 'bg-green-900 border-green-500'
-              }`}>
-                <div className='flex items-center gap-3 mb-4'>
-                  <span className='text-4xl'>{result.is_phishing ? '⚠️' : '✅'}</span>
-                  <h2 className={`text-2xl font-bold ${result.is_phishing ? 'text-red-400' : 'text-green-400'}`}>
-                    {result.is_phishing ? 'PHİSHİNG TESPİT EDİLDİ' : 'GÜVENLİ GÖRÜNÜYOR'}
-                  </h2>
+              <div className={`border rounded-xl p-6 ${risk.bg} ${risk.border}`}>
+
+                <div className='flex items-center gap-3 mb-3'>
+                  <span className='text-4xl'>{risk.icon}</span>
+                  <div>
+                    <h2 className={`text-2xl font-bold ${risk.text}`}>
+                      {risk.title}
+                    </h2>
+                    <span className={`text-sm font-bold ${risk.text}`}>
+                      {risk.badge}
+                    </span>
+                  </div>
                 </div>
 
                 <p className='text-gray-300 text-lg mb-4'>
                   {result.is_phishing ? 'Tehdit Skoru:' : 'Güvenlik Skoru:'}
-                  <span className={`ml-2 font-bold text-2xl ${result.is_phishing ? 'text-red-400' : 'text-green-400'}`}>
-                    {result.is_phishing ? `%${result.confidence}` : `%${(100 - result.confidence).toFixed(0)}`}
+                  <span className={`ml-2 font-bold text-2xl ${risk.text}`}>
+                    {result.is_phishing
+                      ? `%${result.confidence}`
+                      : `%${(100 - result.confidence).toFixed(0)}`}
                   </span>
                 </p>
 

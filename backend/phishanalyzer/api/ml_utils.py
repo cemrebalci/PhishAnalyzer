@@ -86,6 +86,7 @@ def predict_url(url):
                 'confidence': 5.0,
                 'explanations': [],
                 'ai_explanation': None,
+                'risk_level': 'safe',
                 'features': {}
             }
 
@@ -96,6 +97,7 @@ def predict_url(url):
                 'confidence': 5.0,
                 'explanations': [],
                 'ai_explanation': None,
+                'risk_level': 'safe',
                 'features': {}
             }
 
@@ -104,17 +106,27 @@ def predict_url(url):
 
     prediction = model.predict(X)[0]
     probability = model.predict_proba(X)[0]
-    # Maximum %95 ile sınırla - daha gerçekçi sonuçlar
     confidence = min(round(float(max(probability)) * 100, 2), 95.0)
     explanations = explain_prediction(url, features_dict)
     is_phishing = bool(prediction == 0)
     ai_explanation = generate_ai_explanation(url, explanations, is_phishing) if (explanations or is_phishing) else None
+
+    # Risk seviyesi hesapla
+    if not is_phishing:
+        risk_level = 'safe'
+    elif confidence >= 70:
+        risk_level = 'high'
+    elif confidence >= 30:
+        risk_level = 'medium'
+    else:
+        risk_level = 'low'
 
     return {
         'is_phishing': is_phishing,
         'confidence': confidence,
         'explanations': explanations,
         'ai_explanation': ai_explanation,
+        'risk_level': risk_level,
         'features': features_dict
     }
 

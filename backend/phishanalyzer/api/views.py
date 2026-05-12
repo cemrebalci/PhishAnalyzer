@@ -36,6 +36,7 @@ class URLScanView(APIView):
             'confidence': result['confidence'],
             'explanations': result['explanations'],
             'ai_explanation': result.get('ai_explanation'),
+            'risk_level': result.get('risk_level', 'safe'),
             'scanned_at': scan.scanned_at
         }, status=status.HTTP_200_OK)
 
