@@ -23,19 +23,31 @@ GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 print(f"GEMINI_API_KEY durumu: {'Var' if GEMINI_API_KEY else 'YOK'}")
 
 
-def generate_ai_explanation(url, explanations):
+def generate_ai_explanation(url, explanations, is_phishing=True):
     if not GEMINI_API_KEY:
         return None
     try:
         client = genai.Client(api_key=GEMINI_API_KEY)
-        prompt = f"""
-Sen bir siber güvenlik uzmanısın. Aşağıdaki URL analiz sonuçlarına göre
-kullanıcıya kısa ve anlaşılır bir güvenlik açıklaması yaz. Türkçe yaz.
-Maksimum 2-3 cümle olsun.
+
+        if is_phishing:
+            prompt = f"""
+Sen bir siber güvenlik uzmanısın.
+ML modelimiz bu URL'yi PHİSHİNG olarak tespit etti.
 
 URL: {url}
-Tespit edilen riskler: {', '.join(explanations) if explanations else 'Belirgin risk yok'}
+Tespit edilen riskler: {', '.join(explanations) if explanations else 'URL yapısı şüpheli'}
 
+Bu tespiti destekleyen kısa ve anlaşılır bir açıklama yaz. Türkçe yaz. Maksimum 2-3 cümle olsun.
+Sadece açıklamayı yaz, başka bir şey ekleme.
+"""
+        else:
+            prompt = f"""
+Sen bir siber güvenlik uzmanısın.
+ML modelimiz bu URL'yi GÜVENLİ olarak tespit etti.
+
+URL: {url}
+
+Kısa ve anlaşılır bir güvenlik onayı yaz. Türkçe yaz. Maksimum 1-2 cümle olsun.
 Sadece açıklamayı yaz, başka bir şey ekleme.
 """
         response = client.models.generate_content(
@@ -94,10 +106,8 @@ def predict_url(url):
     probability = model.predict_proba(X)[0]
     confidence = round(float(max(probability)) * 100, 2)
     explanations = explain_prediction(url, features_dict)
-    
-    # Model phishing diyorsa her zaman AI açıklaması üret
     is_phishing = bool(prediction == 0)
-    ai_explanation = generate_ai_explanation(url, explanations) if (explanations or is_phishing) else None
+    ai_explanation = generate_ai_explanation(url, explanations, is_phishing) if (explanations or is_phishing) else None
 
     return {
         'is_phishing': is_phishing,
