@@ -104,7 +104,8 @@ def predict_url(url):
 
     prediction = model.predict(X)[0]
     probability = model.predict_proba(X)[0]
-    confidence = round(float(max(probability)) * 100, 2)
+    # Maximum %95 ile sınırla - daha gerçekçi sonuçlar
+    confidence = min(round(float(max(probability)) * 100, 2), 95.0)
     explanations = explain_prediction(url, features_dict)
     is_phishing = bool(prediction == 0)
     ai_explanation = generate_ai_explanation(url, explanations, is_phishing) if (explanations or is_phishing) else None
