@@ -11,3 +11,4 @@ dj-database-url
 google-genai
 # model v2
 pandas
+# force deploy
