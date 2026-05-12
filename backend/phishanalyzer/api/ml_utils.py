@@ -88,18 +88,19 @@ def predict_url(url):
             }
 
     features_dict = extract_features(url)
-    
-    # Feature names uyarısını düzelt — DataFrame kullan
     X = pd.DataFrame([features_dict])[feature_names]
 
     prediction = model.predict(X)[0]
     probability = model.predict_proba(X)[0]
     confidence = round(float(max(probability)) * 100, 2)
     explanations = explain_prediction(url, features_dict)
-    ai_explanation = generate_ai_explanation(url, explanations) if explanations else None
+    
+    # Model phishing diyorsa her zaman AI açıklaması üret
+    is_phishing = bool(prediction == 0)
+    ai_explanation = generate_ai_explanation(url, explanations) if (explanations or is_phishing) else None
 
     return {
-        'is_phishing': bool(prediction == 0),
+        'is_phishing': is_phishing,
         'confidence': confidence,
         'explanations': explanations,
         'ai_explanation': ai_explanation,
