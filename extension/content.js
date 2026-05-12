@@ -13,6 +13,8 @@ if (currentURL.startsWith('http') &&
   .then(res => res.json())
   .then(data => {
     const isPhishing = data.is_phishing
+    const aiText = data.ai_explanation ? String(data.ai_explanation).substring(0, 150) : ''
+    
     const warning = document.createElement('div')
     warning.id = 'phishanalyzer-warning'
     warning.innerHTML = `
@@ -35,11 +37,11 @@ if (currentURL.startsWith('http') &&
           ${isPhishing ? 'Tehdit Skoru: %' + data.confidence : 'Güvenlik Skoru: %' + (100 - data.confidence).toFixed(0)}
         </div>
         ${isPhishing && data.explanations ? data.explanations.map(exp =>
-          `<div style="font-size:12px;color:#fca5a5;margin-top:2px;">• ${exp}</div>`
+          '<div style="font-size:12px;color:#fca5a5;margin-top:2px;">• ' + exp + '</div>'
         ).join('') : ''}
-        ${isPhishing && data.ai_explanation ? `
+        ${isPhishing && aiText ? `
           <div style="font-size:12px;color:#fde68a;margin-top:8px;padding-top:8px;border-top:1px solid #ef4444;">
-            🤖 ${data.ai_explanation.substring(0, 150)}
+            🤖 ` + aiText + `
           </div>
         ` : ''}
         <button onclick="document.getElementById('phishanalyzer-warning').remove()" style="
