@@ -59,12 +59,14 @@ function App() {
     }}>
 
       {/* Navbar */}
-      <nav style={{
-        background: 'rgba(8,15,30,0.8)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-        backdropFilter: 'blur(14px)',
-      }}
-        className='px-8 py-4 flex items-center justify-between sticky top-0 z-50'>
+      <nav
+        style={{
+          background: 'rgba(8,15,30,0.8)',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          backdropFilter: 'blur(14px)',
+        }}
+        className='px-8 py-4 flex items-center justify-between sticky top-0 z-50'
+      >
         <div className='flex items-center gap-3'>
           <img
             src='/pa-logo.jpg'
@@ -81,9 +83,10 @@ function App() {
             onClick={() => setPage('home')}
             className='px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200'
             style={{
-              background: page === 'home' ? 'rgba(56,189,248,0.15)' : 'transparent',
-              color: page === 'home' ? '#38BDF8' : '#94a3b8',
-              border: page === 'home' ? '1px solid rgba(56,189,248,0.3)' : '1px solid transparent',
+              background: page === 'home' ? '#38BDF8' : 'transparent',
+              color: page === 'home' ? '#0B1120' : '#475569',
+              border: page === 'home' ? '1px solid #38BDF8' : '1px solid rgba(255,255,255,0.1)',
+              boxShadow: page === 'home' ? '0 0 16px rgba(56,189,248,0.3)' : 'none',
             }}
           >
             🛡️ Analiz
@@ -92,9 +95,10 @@ function App() {
             onClick={() => setPage('dashboard')}
             className='px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200'
             style={{
-              background: page === 'dashboard' ? 'rgba(56,189,248,0.15)' : 'transparent',
-              color: page === 'dashboard' ? '#38BDF8' : '#94a3b8',
-              border: page === 'dashboard' ? '1px solid rgba(56,189,248,0.3)' : '1px solid transparent',
+              background: page === 'dashboard' ? '#38BDF8' : 'transparent',
+              color: page === 'dashboard' ? '#0B1120' : '#475569',
+              border: page === 'dashboard' ? '1px solid #38BDF8' : '1px solid rgba(255,255,255,0.1)',
+              boxShadow: page === 'dashboard' ? '0 0 16px rgba(56,189,248,0.3)' : 'none',
             }}
           >
             📊 Dashboard
@@ -129,6 +133,7 @@ function App() {
             alignItems: 'center',
           }}>
 
+            {/* Logo */}
             <img
               src='/pa-logo.jpg'
               alt='PhishAnalyzer Logo'
@@ -140,6 +145,7 @@ function App() {
               }}
             />
 
+            {/* Başlık */}
             <h1 className='font-bold mb-4 text-center' style={{
               fontFamily: 'Space Grotesk, sans-serif',
               fontSize: '3.5rem',
@@ -245,6 +251,7 @@ function App() {
               <p className='mt-4 text-sm' style={{ color: '#f87171' }}>{error}</p>
             )}
 
+            {/* Sonuç */}
             {result && risk && (
               <div className='mt-8 w-full pb-16' style={{ maxWidth: '600px' }}>
                 <div className='rounded-2xl p-6' style={{
