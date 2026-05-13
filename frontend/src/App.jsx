@@ -43,7 +43,7 @@ function App() {
         className='px-8 py-4 flex items-center justify-between sticky top-0 z-50 backdrop-blur-md'>
         <div className='flex items-center gap-3'>
           <img
-            src='/pa-logo.jpeg'
+            src='/pa-logo.jpg'
             alt='PhishAnalyzer Logo'
             className='w-9 h-9 rounded-full object-cover'
             style={{ border: '2px solid #38BDF8' }}
@@ -94,7 +94,7 @@ function App() {
 
             {/* Logo */}
             <img
-              src='/pa-logo.jpeg'
+              src='/pa-logo.jpg'
               alt='PhishAnalyzer Logo'
               className='rounded-full object-cover mb-8'
               style={{
