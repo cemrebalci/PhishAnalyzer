@@ -44,7 +44,6 @@ export default function Dashboard() {
   return (
     <div className='min-h-screen text-white' style={{ background: '#0B1120', padding: '40px 32px' }}>
 
-      {/* Başlık */}
       <div className='mb-10'>
         <h1 className='font-bold mb-1' style={{
           fontFamily: 'Space Grotesk, sans-serif',
@@ -58,7 +57,6 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* Özet Kartlar */}
       <div className='grid grid-cols-3 gap-5 mb-8'>
         <div style={cardStyle}>
           <p className='text-sm mb-3' style={{ color: '#64748b' }}>📊 Toplam Tarama</p>
@@ -80,10 +78,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Pie Chart + Son Tehditler */}
       <div className='grid grid-cols-2 gap-5 mb-8'>
-
-        {/* Donut Chart */}
         <div style={cardStyle}>
           <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
             RİSK DAĞILIMI
@@ -95,11 +90,10 @@ export default function Dashboard() {
                   data={pieData}
                   cx='50%'
                   cy='45%'
-                  innerRadius={55}
                   outerRadius={85}
                   dataKey='value'
-                  label={({ percent }) => `%${(percent * 100).toFixed(0)}`}
-                  labelLine={false}
+                  label={({ name, percent }) => `${name} %${(percent * 100).toFixed(0)}`}
+                  labelLine={true}
                 >
                   {pieData.map((entry, index) => (
                     <Cell key={index} fill={COLORS[index]} />
@@ -128,7 +122,6 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Son Tehditler */}
         <div style={cardStyle}>
           <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
             SON TESPİT EDİLEN TEHDİTLER
@@ -172,7 +165,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Son 7 Gün */}
       <div style={cardStyle}>
         <h2 className='font-semibold mb-6' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
           SON 7 GÜN
