@@ -20,6 +20,20 @@ const SkeletonLine = ({ width = '100%' }) => (
   }} />
 )
 
+const highlightText = (text) => {
+  const keywords = [
+    'HTTPS', 'HTTP', 'phishing', 'kimlik avı', 'sahte', 'tehlikeli',
+    'dolandırıcılık', 'şüpheli', 'zararlı', 'kötü niyetli', 'SSL',
+    'güvenli', 'güvensiz', 'risk', 'tehdit', 'engel'
+  ]
+  const parts = text.split(new RegExp(`(${keywords.join('|')})`, 'gi'))
+  return parts.map((part, i) =>
+    keywords.some(k => k.toLowerCase() === part.toLowerCase())
+      ? <span key={i} style={{ color: '#38BDF8', fontWeight: '600' }}>{part}</span>
+      : part
+  )
+}
+
 function App() {
   const [page, setPage] = useState(() => {
     const params = new URLSearchParams(window.location.search)
@@ -90,7 +104,6 @@ function App() {
       backgroundSize: '80px 80px',
     }}>
 
-      {/* Navbar */}
       <nav
         style={{
           background: 'rgba(8,15,30,0.8)',
@@ -319,7 +332,6 @@ function App() {
                     </div>
                   </div>
 
-                  {/* AI Kutusu - Skeleton veya Gerçek İçerik */}
                   <div className='rounded-xl p-4' style={{
                     background: 'rgba(56,189,248,0.04)',
                     border: '1px solid rgba(56,189,248,0.12)'
@@ -333,7 +345,7 @@ function App() {
                     </h3>
                     {result.ai_explanation ? (
                       <p className='text-sm leading-7' style={{ color: '#94a3b8' }}>
-                        {result.ai_explanation}
+                        {highlightText(result.ai_explanation)}
                       </p>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
