@@ -3,7 +3,7 @@ import joblib
 import numpy as np
 import pandas as pd
 import os
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 from google import genai
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -106,12 +106,11 @@ def predict_url(url):
 
     prediction = model.predict(X)[0]
     probability = model.predict_proba(X)[0]
-    confidence = min(round(float(max(probability)) * 100, 2), 95.0)
+    confidence = round(float(max(probability)) * 100, 2)
     explanations = explain_prediction(url, features_dict)
     is_phishing = bool(prediction == 0)
     ai_explanation = generate_ai_explanation(url, explanations, is_phishing) if (explanations or is_phishing) else None
 
-    # Risk seviyesi hesapla
     if not is_phishing:
         risk_level = 'safe'
     elif confidence >= 70:
@@ -133,11 +132,18 @@ def predict_url(url):
 
 def extract_features(url):
     parsed = urlparse(url)
+    domain = parsed.netloc.lower()
+    path = parsed.path
+    query = parsed.query
+
     features = {
+        # Mevcut özellikler
         'URLLength': len(url),
         'IsHTTPS': 1 if url.startswith('https') else 0,
         'NoOfSubDomain': url.count('.') - 1,
-        'IsDomainIP': 1 if re.match(r'\d+\.\d+\.\d+\.\d+', parsed.netloc) else 0,
+        'IsDomainIP': 1 if re.match(r'\d+\.\d+\.\d+\.\d+', domain) else 0,
+        'URLSimilarityIndex': calculate_similarity(url),
+        'TLDLegitimateProb': get_tld_prob(url),
         'HasObfuscation': 1 if '%' in url else 0,
         'NoOfObfuscatedChar': url.count('%'),
         'HasPasswordField': 1 if 'password' in url.lower() else 0,
@@ -146,8 +152,15 @@ def extract_features(url):
         'Crypto': 1 if 'crypto' in url.lower() else 0,
         'DegitRatioInURL': sum(c.isdigit() for c in url) / len(url) if len(url) > 0 else 0,
         'NoOfAmpersandInURL': url.count('&'),
-        'URLSimilarityIndex': calculate_similarity(url),
-        'TLDLegitimateProb': get_tld_prob(url),
+        # Yeni özellikler
+        'SpecialCharRatio': len(re.findall(r'[-_@!~]', url)) / len(url) if len(url) > 0 else 0,
+        'DigitRatioInDomain': sum(c.isdigit() for c in domain) / len(domain) if len(domain) > 0 else 0,
+        'SubdomainDepth': len(domain.split('.')) - 2 if len(domain.split('.')) > 2 else 0,
+        'PathLength': len(path),
+        'QueryParamCount': len(parse_qs(query)),
+        'HasAtSymbol': 1 if '@' in url else 0,
+        'HasDoubleSlash': 1 if '//' in url[7:] else 0,
+        'DomainLength': len(domain),
     }
     return features
 
@@ -203,4 +216,12 @@ def explain_prediction(url, features_dict):
         explanations.append('Gizlenmiş/karartılmış karakterler var')
     if features_dict['TLDLegitimateProb'] < 0.3:
         explanations.append('Riskli domain uzantısı (.xyz, .tk gibi)')
+    if features_dict['HasAtSymbol'] == 1:
+        explanations.append('URL içinde @ işareti var')
+    if features_dict['HasDoubleSlash'] == 1:
+        explanations.append('URL içinde şüpheli // kullanımı var')
+    if features_dict['DigitRatioInDomain'] > 0.3:
+        explanations.append('Domain adında çok fazla rakam var')
+    if features_dict['DomainLength'] > 30:
+        explanations.append(f'Domain adı çok uzun ({features_dict["DomainLength"]} karakter)')
     return explanations
