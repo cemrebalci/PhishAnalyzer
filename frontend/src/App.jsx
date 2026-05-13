@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Dashboard from './pages/Dashboard'
 
@@ -9,12 +9,6 @@ const riskConfig = {
   high:   { bg: 'bg-red-950', border: 'border-red-500', text: 'text-red-400', badge: '🔴 Yüksek Risk', icon: '🚨', title: 'PHİSHİNG TESPİT EDİLDİ' },
 }
 
-const miniStats = [
-  { icon: '🔍', label: 'Toplam Tarama', value: '1,200+' },
-  { icon: '🚨', label: 'Tehdit Engellendi', value: '340+' },
-  { icon: '🎯', label: 'Tespit Doğruluğu', value: '%99.9' },
-]
-
 function App() {
   const [page, setPage] = useState(() => {
     const params = new URLSearchParams(window.location.search)
@@ -24,6 +18,19 @@ function App() {
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [stats, setStats] = useState(null)
+
+  useEffect(() => {
+    axios.get('https://phishanalyzer-production.up.railway.app/api/dashboard/')
+      .then(res => setStats(res.data))
+      .catch(() => {})
+  }, [])
+
+  const miniStats = [
+    { icon: '🔍', label: 'Toplam Tarama', value: stats ? `${stats.total}` : '...' },
+    { icon: '🚨', label: 'Tehdit Engellendi', value: stats ? `${stats.phishing}` : '...' },
+    { icon: '🛡️', label: 'Güvenlik Oranı', value: stats ? `%${stats.safe_percentage}` : '...' },
+  ]
 
   const handleScan = async () => {
     if (!url) { setError('Lütfen bir URL giriniz!'); return }
