@@ -292,22 +292,6 @@ function App() {
                     </div>
                   </div>
 
-                  {result.explanations?.length > 0 && (
-                    <div className='mb-5'>
-                      <h3 className='font-semibold mb-3 text-xs' style={{ color: '#64748b', fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '0.05em' }}>
-                        TESPİT EDİLEN RİSKLER
-                      </h3>
-                      <ul className='space-y-2'>
-                        {result.explanations.map((exp, i) => (
-                          <li key={i} className='flex items-center gap-2 text-sm' style={{ color: '#cbd5e1' }}>
-                            <span style={{ color: '#ef4444' }}>▸</span>
-                            <span>{exp}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
                   {result.ai_explanation && (
                     <div className='rounded-xl p-4' style={{
                       background: 'rgba(56,189,248,0.04)',
