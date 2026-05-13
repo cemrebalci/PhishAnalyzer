@@ -84,7 +84,7 @@ function App() {
             className='px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200'
             style={{
               background: 'transparent',
-              color: page === 'home' ? '#38BDF8' : '#475569',
+              color: page === 'home' ? '#38BDF8' : '#94a3b8',
               border: page === 'home' ? '1px solid #38BDF8' : '1px solid rgba(255,255,255,0.1)',
               boxShadow: page === 'home' ? '0 0 12px rgba(56,189,248,0.2)' : 'none',
             }}
@@ -96,7 +96,7 @@ function App() {
             className='px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200'
             style={{
               background: 'transparent',
-              color: page === 'dashboard' ? '#38BDF8' : '#475569',
+              color: page === 'dashboard' ? '#38BDF8' : '#94a3b8',
               border: page === 'dashboard' ? '1px solid #38BDF8' : '1px solid rgba(255,255,255,0.1)',
               boxShadow: page === 'dashboard' ? '0 0 12px rgba(56,189,248,0.2)' : 'none',
             }}
