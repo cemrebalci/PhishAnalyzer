@@ -83,10 +83,10 @@ function App() {
             onClick={() => setPage('home')}
             className='px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200'
             style={{
-              background: page === 'home' ? '#38BDF8' : 'transparent',
-              color: page === 'home' ? '#0B1120' : '#475569',
+              background: 'transparent',
+              color: page === 'home' ? '#38BDF8' : '#475569',
               border: page === 'home' ? '1px solid #38BDF8' : '1px solid rgba(255,255,255,0.1)',
-              boxShadow: page === 'home' ? '0 0 16px rgba(56,189,248,0.3)' : 'none',
+              boxShadow: page === 'home' ? '0 0 12px rgba(56,189,248,0.2)' : 'none',
             }}
           >
             🛡️ Analiz
@@ -95,10 +95,10 @@ function App() {
             onClick={() => setPage('dashboard')}
             className='px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200'
             style={{
-              background: page === 'dashboard' ? '#38BDF8' : 'transparent',
-              color: page === 'dashboard' ? '#0B1120' : '#475569',
+              background: 'transparent',
+              color: page === 'dashboard' ? '#38BDF8' : '#475569',
               border: page === 'dashboard' ? '1px solid #38BDF8' : '1px solid rgba(255,255,255,0.1)',
-              boxShadow: page === 'dashboard' ? '0 0 16px rgba(56,189,248,0.3)' : 'none',
+              boxShadow: page === 'dashboard' ? '0 0 12px rgba(56,189,248,0.2)' : 'none',
             }}
           >
             📊 Dashboard
