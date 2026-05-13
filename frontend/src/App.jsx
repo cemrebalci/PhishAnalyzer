@@ -9,6 +9,17 @@ const riskConfig = {
   high:   { bg: 'bg-red-950', border: 'border-red-500', text: 'text-red-400', badge: '🔴 Yüksek Risk', icon: '🚨', title: 'PHİSHİNG TESPİT EDİLDİ' },
 }
 
+const SkeletonLine = ({ width = '100%' }) => (
+  <div style={{
+    height: '12px',
+    borderRadius: '6px',
+    width,
+    background: 'linear-gradient(90deg, rgba(56,189,248,0.08) 25%, rgba(56,189,248,0.18) 50%, rgba(56,189,248,0.08) 75%)',
+    backgroundSize: '200% 100%',
+    animation: 'shimmer 1.5s infinite',
+  }} />
+)
+
 function App() {
   const [page, setPage] = useState(() => {
     const params = new URLSearchParams(window.location.search)
@@ -30,8 +41,8 @@ function App() {
   useEffect(() => {
     if (result) {
       const target = result.is_phishing
-      ? parseFloat(result.confidence)
-      : parseFloat((100 - result.confidence).toFixed(1))
+        ? parseFloat(result.confidence)
+        : parseFloat((100 - result.confidence).toFixed(1))
       let start = 0
       const step = target / 40
       const timer = setInterval(() => {
@@ -154,7 +165,6 @@ function App() {
             alignItems: 'center',
           }}>
 
-            {/* Logo */}
             <img
               src='/pa-logo.jpg'
               alt='PhishAnalyzer Logo'
@@ -166,7 +176,6 @@ function App() {
               }}
             />
 
-            {/* Başlık */}
             <h1 className='font-bold mb-4 text-center' style={{
               fontFamily: 'Space Grotesk, sans-serif',
               fontSize: '3.5rem',
@@ -183,7 +192,6 @@ function App() {
               AI destekli phishing URL analiz platformu — Makine öğrenmesi ile gerçek zamanlı tehdit tespiti
             </p>
 
-            {/* Mini badges */}
             <div className='flex gap-2 mb-10 flex-wrap justify-center'>
               {['🤖 AI Destekli', '⚡ Gerçek Zamanlı', '🔒 ML Modeli', '🌐 Chrome Eklentisi'].map((badge, i) => (
                 <span key={i} className='px-3 py-1 rounded-full text-xs font-medium' style={{
@@ -196,7 +204,6 @@ function App() {
               ))}
             </div>
 
-            {/* Input */}
             <div className='w-full mb-8' style={{ maxWidth: '600px' }}>
               <div className='relative mb-3'>
                 <span className='absolute left-4 top-1/2 -translate-y-1/2' style={{ color: '#475569' }}>🔗</span>
@@ -248,7 +255,6 @@ function App() {
               </button>
             </div>
 
-            {/* Mini İstatistikler */}
             {!result && (
               <div className='flex gap-4 flex-wrap justify-center'>
                 {miniStats.map((stat, i) => (
@@ -272,7 +278,6 @@ function App() {
               <p className='mt-4 text-sm' style={{ color: '#f87171' }}>{error}</p>
             )}
 
-            {/* Sonuç */}
             {result && risk && (
               <div className='mt-8 w-full pb-16' style={{ maxWidth: '600px' }}>
                 <div className='rounded-2xl p-6' style={{
@@ -314,23 +319,31 @@ function App() {
                     </div>
                   </div>
 
-                  {result.ai_explanation && (
-                    <div className='rounded-xl p-4' style={{
-                      background: 'rgba(56,189,248,0.04)',
-                      border: '1px solid rgba(56,189,248,0.12)'
+                  {/* AI Kutusu - Skeleton veya Gerçek İçerik */}
+                  <div className='rounded-xl p-4' style={{
+                    background: 'rgba(56,189,248,0.04)',
+                    border: '1px solid rgba(56,189,248,0.12)'
+                  }}>
+                    <h3 className='font-semibold mb-3 text-xs' style={{
+                      color: '#38BDF8',
+                      fontFamily: 'Space Grotesk, sans-serif',
+                      letterSpacing: '0.05em'
                     }}>
-                      <h3 className='font-semibold mb-2 text-xs' style={{
-                        color: '#38BDF8',
-                        fontFamily: 'Space Grotesk, sans-serif',
-                        letterSpacing: '0.05em'
-                      }}>
-                        🤖 YAPAY ZEKA ANALİZİ
-                      </h3>
+                      🤖 YAPAY ZEKA ANALİZİ
+                    </h3>
+                    {result.ai_explanation ? (
                       <p className='text-sm leading-7' style={{ color: '#94a3b8' }}>
                         {result.ai_explanation}
                       </p>
-                    </div>
-                  )}
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <SkeletonLine width='100%' />
+                        <SkeletonLine width='88%' />
+                        <SkeletonLine width='72%' />
+                      </div>
+                    )}
+                  </div>
+
                 </div>
               </div>
             )}
