@@ -19,8 +19,11 @@ export default function Dashboard() {
   }, [])
 
   if (loading) return (
-    <div className='min-h-screen bg-gray-900 text-white flex items-center justify-center'>
-      <p className='text-cyan-400 text-xl'>⏳ Yükleniyor...</p>
+    <div className='min-h-screen flex items-center justify-center' style={{ background: '#0B1120' }}>
+      <div className='text-center'>
+        <div className='text-4xl mb-4'>⏳</div>
+        <p style={{ color: '#38BDF8', fontFamily: 'Space Grotesk, sans-serif' }}>Yükleniyor...</p>
+      </div>
     </div>
   )
 
@@ -28,44 +31,72 @@ export default function Dashboard() {
     { name: 'Güvenli', value: data?.safe || 0 },
     { name: 'Phishing', value: data?.phishing || 0 },
   ]
-  const COLORS = ['#10b981', '#ef4444']
+  const COLORS = ['#22c55e', '#ef4444']
+
+  const cardStyle = {
+    background: 'rgba(255,255,255,0.03)',
+    border: '1px solid rgba(255,255,255,0.06)',
+    borderRadius: '16px',
+    padding: '24px',
+    backdropFilter: 'blur(12px)',
+  }
 
   return (
-    <div className='min-h-screen bg-gray-900 text-white p-8'>
-      <h1 className='text-4xl font-bold text-cyan-400 mb-8'>
-        📊 Güvenlik Dashboard'u
-      </h1>
+    <div className='min-h-screen text-white' style={{ background: '#0B1120', padding: '40px 32px' }}>
+
+      {/* Başlık */}
+      <div className='mb-10'>
+        <h1 className='font-bold mb-1' style={{
+          fontFamily: 'Space Grotesk, sans-serif',
+          fontSize: '2rem',
+          color: '#f1f5f9'
+        }}>
+          Güvenlik Dashboard'u
+        </h1>
+        <p style={{ color: '#475569', fontSize: '0.95rem' }}>
+          Son 30 günün analiz özeti
+        </p>
+      </div>
 
       {/* Özet Kartlar */}
-      <div className='grid grid-cols-3 gap-6 mb-8'>
-        <div className='bg-gray-800 rounded-xl p-6 border border-gray-600'>
-          <p className='text-gray-400'>Toplam Tarama</p>
-          <p className='text-4xl font-bold text-white mt-2'>{data?.total || 0}</p>
+      <div className='grid grid-cols-3 gap-5 mb-8'>
+        <div style={cardStyle}>
+          <p className='text-sm mb-3' style={{ color: '#64748b' }}>📊 Toplam Tarama</p>
+          <p className='font-bold' style={{ fontSize: '2.5rem', fontFamily: 'Space Grotesk, sans-serif', color: '#f1f5f9' }}>
+            {data?.total || 0}
+          </p>
         </div>
-        <div className='bg-red-900 rounded-xl p-6 border border-red-500'>
-          <p className='text-gray-400'>Phishing Tespit</p>
-          <p className='text-4xl font-bold text-red-400 mt-2'>{data?.phishing || 0}</p>
+        <div style={{ ...cardStyle, border: '1px solid rgba(239,68,68,0.2)', background: 'rgba(239,68,68,0.05)' }}>
+          <p className='text-sm mb-3' style={{ color: '#64748b' }}>🚨 Phishing Tespit</p>
+          <p className='font-bold' style={{ fontSize: '2.5rem', fontFamily: 'Space Grotesk, sans-serif', color: '#ef4444' }}>
+            {data?.phishing || 0}
+          </p>
         </div>
-        <div className='bg-green-900 rounded-xl p-6 border border-green-500'>
-          <p className='text-gray-400'>Güvenlik Oranı</p>
-          <p className='text-4xl font-bold text-green-400 mt-2'>%{data?.safe_percentage || 0}</p>
+        <div style={{ ...cardStyle, border: '1px solid rgba(34,197,94,0.2)', background: 'rgba(34,197,94,0.05)' }}>
+          <p className='text-sm mb-3' style={{ color: '#64748b' }}>🛡️ Güvenlik Oranı</p>
+          <p className='font-bold' style={{ fontSize: '2.5rem', fontFamily: 'Space Grotesk, sans-serif', color: '#22c55e' }}>
+            %{data?.safe_percentage || 0}
+          </p>
         </div>
       </div>
 
       {/* Pie Chart + Son Tehditler */}
-      <div className='grid grid-cols-2 gap-6 mb-8'>
+      <div className='grid grid-cols-2 gap-5 mb-8'>
 
-        {/* Pie Chart */}
-        <div className='bg-gray-800 rounded-xl p-6 border border-gray-600'>
-          <h2 className='text-xl font-bold text-cyan-400 mb-4'>🥧 Risk Dağılımı</h2>
+        {/* Donut Chart */}
+        <div style={cardStyle}>
+          <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+            RİSK DAĞILIMI
+          </h2>
           {data?.total > 0 ? (
-            <ResponsiveContainer width='100%' height={280}>
+            <ResponsiveContainer width='100%' height={260}>
               <PieChart>
                 <Pie
                   data={pieData}
                   cx='50%'
                   cy='45%'
-                  outerRadius={80}
+                  innerRadius={55}
+                  outerRadius={85}
                   dataKey='value'
                   label={({ percent }) => `%${(percent * 100).toFixed(0)}`}
                   labelLine={false}
@@ -75,54 +106,61 @@ export default function Dashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', color: 'white' }}
+                  contentStyle={{
+                    backgroundColor: '#0f172a',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: '8px',
+                    color: 'white'
+                  }}
                   formatter={(value, name) => [`${value} site`, name]}
                 />
                 <Legend
                   verticalAlign='bottom'
                   height={36}
                   formatter={(value) => (
-                    <span style={{ color: value === 'Güvenli' ? '#10b981' : '#ef4444' }}>{value}</span>
+                    <span style={{ color: value === 'Güvenli' ? '#22c55e' : '#ef4444', fontSize: '13px' }}>{value}</span>
                   )}
                 />
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <p className='text-gray-400'>Henüz veri yok</p>
+            <p style={{ color: '#475569' }}>Henüz veri yok</p>
           )}
         </div>
 
-        {/* Son Tehditler Tablosu */}
-        <div className='bg-gray-800 rounded-xl p-6 border border-gray-600'>
-          <h2 className='text-xl font-bold text-red-400 mb-4'>
-            ⚠️ Son Tespit Edilen Tehditler
+        {/* Son Tehditler */}
+        <div style={cardStyle}>
+          <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+            SON TESPİT EDİLEN TEHDİTLER
           </h2>
           {!data?.recent_threats?.length ? (
-            <p className='text-gray-400'>Henüz tehdit tespit edilmedi</p>
+            <p style={{ color: '#475569' }}>Henüz tehdit tespit edilmedi</p>
           ) : (
             <table className='w-full'>
               <thead>
-                <tr className='text-gray-400 text-sm border-b border-gray-700'>
-                  <th className='text-left pb-3'>URL</th>
-                  <th className='text-left pb-3'>Sebep</th>
-                  <th className='text-right pb-3'>Risk</th>
+                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  <th className='text-left pb-3 text-xs' style={{ color: '#475569' }}>URL</th>
+                  <th className='text-left pb-3 text-xs' style={{ color: '#475569' }}>SEBEP</th>
+                  <th className='text-right pb-3 text-xs' style={{ color: '#475569' }}>RİSK</th>
                 </tr>
               </thead>
               <tbody>
                 {data?.recent_threats?.map((threat, i) => (
-                  <tr key={i} className='border-b border-gray-700'>
-                    <td className='py-3 text-gray-300 text-sm'>
-                      {threat.url.length > 30 ? threat.url.substring(0, 30) + '...' : threat.url}
+                  <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    <td className='py-3 text-sm' style={{ color: '#cbd5e1' }}>
+                      {threat.url.length > 28 ? threat.url.substring(0, 28) + '...' : threat.url}
                     </td>
-                    <td className='py-3 text-yellow-400 text-xs'>
+                    <td className='py-3 text-xs' style={{ color: '#f59e0b' }}>
                       {threat.reason || 'Şüpheli URL yapısı'}
                     </td>
                     <td className='py-3 text-right'>
-                      <span className={`font-bold px-2 py-1 rounded text-xs ${
-                        threat.confidence_score >= 70 ? 'bg-red-900 text-red-400' :
-                        threat.confidence_score >= 30 ? 'bg-yellow-900 text-yellow-400' :
-                        'bg-lime-900 text-lime-400'
-                      }`}>
+                      <span className='text-xs font-bold px-2 py-1 rounded-full' style={{
+                        background: threat.confidence_score >= 70 ? 'rgba(239,68,68,0.15)' :
+                                    threat.confidence_score >= 30 ? 'rgba(245,158,11,0.15)' :
+                                    'rgba(132,204,22,0.15)',
+                        color: threat.confidence_score >= 70 ? '#ef4444' :
+                               threat.confidence_score >= 30 ? '#f59e0b' : '#84cc16'
+                      }}>
                         %{threat.confidence_score}
                       </span>
                     </td>
@@ -135,21 +173,31 @@ export default function Dashboard() {
       </div>
 
       {/* Son 7 Gün */}
-      <div className='bg-gray-800 rounded-xl p-6 border border-gray-600'>
-        <h2 className='text-xl font-bold text-cyan-400 mb-4'>📅 Son 7 Gün</h2>
-        <div className='space-y-3'>
+      <div style={cardStyle}>
+        <h2 className='font-semibold mb-6' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+          SON 7 GÜN
+        </h2>
+        <div className='space-y-4'>
           {data?.daily?.map((day, i) => (
             <div key={i} className='flex items-center gap-4'>
-              <span className='text-gray-400 w-16 text-sm'>{day.date}</span>
-              <div className='flex-1 bg-gray-700 rounded-full h-4'>
+              <span className='text-xs w-16' style={{ color: '#475569' }}>{day.date}</span>
+              <div className='flex-1 rounded-full h-2' style={{ background: 'rgba(255,255,255,0.05)' }}>
                 <div
-                  className='bg-cyan-500 h-4 rounded-full transition-all'
-                  style={{ width: day.total > 0 ? `${Math.min((day.total / 10) * 100, 100)}%` : '0%' }}
+                  className='h-2 rounded-full transition-all'
+                  style={{
+                    width: day.total > 0 ? `${Math.min((day.total / 10) * 100, 100)}%` : '0%',
+                    background: 'linear-gradient(90deg, #38BDF8, #06B6D4)'
+                  }}
                 />
               </div>
-              <span className='text-white w-8 text-sm'>{day.total}</span>
+              <span className='text-xs w-6 text-right' style={{ color: '#94a3b8' }}>{day.total}</span>
               {day.phishing > 0 && (
-                <span className='text-red-400 text-sm'>⚠️ {day.phishing}</span>
+                <span className='text-xs px-2 py-0.5 rounded-full' style={{
+                  background: 'rgba(239,68,68,0.15)',
+                  color: '#ef4444'
+                }}>
+                  ⚠️ {day.phishing}
+                </span>
               )}
             </div>
           ))}
