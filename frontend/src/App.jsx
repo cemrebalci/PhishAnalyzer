@@ -9,6 +9,12 @@ const riskConfig = {
   high:   { bg: 'bg-red-950', border: 'border-red-500', text: 'text-red-400', badge: '🔴 Yüksek Risk', icon: '🚨', title: 'PHİSHİNG TESPİT EDİLDİ' },
 }
 
+const miniStats = [
+  { icon: '🔍', label: 'Toplam Tarama', value: '1,200+' },
+  { icon: '🚨', label: 'Tehdit Engellendi', value: '340+' },
+  { icon: '🎯', label: 'Tespit Doğruluğu', value: '%99.9' },
+]
+
 function App() {
   const [page, setPage] = useState(() => {
     const params = new URLSearchParams(window.location.search)
@@ -36,11 +42,22 @@ function App() {
   const risk = result ? (riskConfig[result.risk_level] || riskConfig.high) : null
 
   return (
-    <div className='min-h-screen text-white' style={{ background: '#0B1120' }}>
+    <div className='min-h-screen text-white' style={{
+      background: '#0B1120',
+      backgroundImage: `
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)
+      `,
+      backgroundSize: '80px 80px',
+    }}>
 
       {/* Navbar */}
-      <nav style={{ background: 'rgba(15,23,42,0.95)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
-        className='px-8 py-4 flex items-center justify-between sticky top-0 z-50 backdrop-blur-md'>
+      <nav style={{
+        background: 'rgba(8,15,30,0.8)',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        backdropFilter: 'blur(14px)',
+      }}
+        className='px-8 py-4 flex items-center justify-between sticky top-0 z-50'>
         <div className='flex items-center gap-3'>
           <img
             src='/pa-logo.jpg'
@@ -48,7 +65,7 @@ function App() {
             className='w-9 h-9 rounded-full object-cover'
             style={{ border: '2px solid #38BDF8' }}
           />
-          <span className='font-bold text-xl brand' style={{ color: '#38BDF8', fontFamily: 'Space Grotesk, sans-serif' }}>
+          <span className='font-bold text-xl' style={{ color: '#38BDF8', fontFamily: 'Space Grotesk, sans-serif' }}>
             PhishAnalyzer
           </span>
         </div>
@@ -81,26 +98,40 @@ function App() {
       {page === 'dashboard' && <Dashboard />}
 
       {page === 'home' && (
-        <div className='flex flex-col items-center px-4' style={{ paddingTop: '80px' }}>
+        <div style={{
+          minHeight: 'calc(100vh - 65px)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: result ? 'flex-start' : 'center',
+          padding: result ? '60px 16px' : '0 16px',
+          position: 'relative',
+        }}>
 
-          {/* Radial gradient arka plan */}
+          {/* Radial gradient */}
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'radial-gradient(circle at 50% 0%, rgba(56,189,248,0.08), transparent 60%)',
+            background: 'radial-gradient(circle at 50% 0%, rgba(56,189,248,0.07), transparent 55%)',
             pointerEvents: 'none', zIndex: 0
           }} />
 
-          <div style={{ position: 'relative', zIndex: 1, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{
+            position: 'relative', zIndex: 1,
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}>
 
             {/* Logo */}
             <img
               src='/pa-logo.jpg'
               alt='PhishAnalyzer Logo'
-              className='rounded-full object-cover mb-8'
+              className='rounded-full object-cover mb-6'
               style={{
-                width: '96px', height: '96px',
-                border: '3px solid rgba(56,189,248,0.5)',
-                boxShadow: '0 0 32px rgba(56,189,248,0.2)'
+                width: '88px', height: '88px',
+                border: '2px solid rgba(56,189,248,0.4)',
+                boxShadow: '0 0 24px rgba(56,189,248,0.15)'
               }}
             />
 
@@ -108,24 +139,25 @@ function App() {
             <h1 className='font-bold mb-3 text-center' style={{
               fontFamily: 'Space Grotesk, sans-serif',
               fontSize: '3.5rem',
+              letterSpacing: '-0.03em',
+              lineHeight: 1,
               background: 'linear-gradient(135deg, #38BDF8, #22D3EE, #06B6D4)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              lineHeight: 1.1
             }}>
               PhishAnalyzer
             </h1>
-            <p className='mb-4 text-center' style={{ color: '#64748b', fontSize: '1.1rem', maxWidth: '480px' }}>
+            <p className='mb-5 text-center' style={{ color: '#64748b', fontSize: '1rem', maxWidth: '440px', lineHeight: 1.6 }}>
               AI destekli phishing URL analiz platformu — Makine öğrenmesi ile gerçek zamanlı tehdit tespiti
             </p>
 
             {/* Mini badges */}
-            <div className='flex gap-3 mb-10 flex-wrap justify-center'>
+            <div className='flex gap-2 mb-8 flex-wrap justify-center'>
               {['🤖 AI Destekli', '⚡ Gerçek Zamanlı', '🔒 ML Modeli', '🌐 Chrome Eklentisi'].map((badge, i) => (
                 <span key={i} className='px-3 py-1 rounded-full text-xs font-medium' style={{
-                  background: 'rgba(56,189,248,0.08)',
-                  border: '1px solid rgba(56,189,248,0.2)',
-                  color: '#38BDF8'
+                  background: 'rgba(56,189,248,0.06)',
+                  border: '1px solid rgba(56,189,248,0.18)',
+                  color: '#7DD3FC'
                 }}>
                   {badge}
                 </span>
@@ -133,9 +165,9 @@ function App() {
             </div>
 
             {/* Input */}
-            <div className='w-full' style={{ maxWidth: '640px' }}>
+            <div className='w-full mb-8' style={{ maxWidth: '600px' }}>
               <div className='relative mb-3'>
-                <span className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-500'>🔗</span>
+                <span className='absolute left-4 top-1/2 -translate-y-1/2' style={{ color: '#475569' }}>🔗</span>
                 <input
                   type='text'
                   value={url}
@@ -147,12 +179,19 @@ function App() {
                     background: 'rgba(255,255,255,0.03)',
                     border: '1px solid rgba(255,255,255,0.08)',
                     borderRadius: '12px',
-                    padding: '16px 16px 16px 44px',
+                    padding: '15px 16px 15px 44px',
                     backdropFilter: 'blur(12px)',
-                    transition: 'border-color 0.2s',
+                    transition: 'border-color 0.2s, box-shadow 0.2s',
+                    fontFamily: 'Inter, sans-serif',
                   }}
-                  onFocus={e => e.target.style.borderColor = 'rgba(56,189,248,0.5)'}
-                  onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
+                  onFocus={e => {
+                    e.target.style.borderColor = 'rgba(56,189,248,0.5)'
+                    e.target.style.boxShadow = '0 0 0 4px rgba(56,189,248,0.08)'
+                  }}
+                  onBlur={e => {
+                    e.target.style.borderColor = 'rgba(255,255,255,0.08)'
+                    e.target.style.boxShadow = 'none'
+                  }}
                 />
               </div>
               <button
@@ -160,21 +199,40 @@ function App() {
                 disabled={loading}
                 className='w-full font-semibold text-base transition-all duration-200'
                 style={{
-                  background: loading ? '#164e63' : 'linear-gradient(135deg, #0ea5e9, #06b6d4)',
+                  background: loading ? '#164e63' : 'linear-gradient(180deg, #38BDF8, #06B6D4)',
                   border: 'none',
                   borderRadius: '12px',
-                  padding: '14px',
-                  color: 'white',
+                  padding: '13px',
+                  color: '#0B1120',
                   cursor: loading ? 'not-allowed' : 'pointer',
                   fontFamily: 'Space Grotesk, sans-serif',
-                  boxShadow: loading ? 'none' : '0 4px 24px rgba(14,165,233,0.3)',
+                  boxShadow: loading ? 'none' : '0 4px 20px rgba(56,189,248,0.25)',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
                 }}
-                onMouseEnter={e => { if (!loading) e.target.style.transform = 'translateY(-1px)' }}
-                onMouseLeave={e => { e.target.style.transform = 'translateY(0)' }}
+                onMouseEnter={e => { if (!loading) { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 8px 28px rgba(56,189,248,0.35)' }}}
+                onMouseLeave={e => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = loading ? 'none' : '0 4px 20px rgba(56,189,248,0.25)' }}
               >
                 {loading ? '⏳ Analiz Ediliyor...' : '🔍 Analiz Et'}
               </button>
             </div>
+
+            {/* Mini İstatistikler */}
+            {!result && (
+              <div className='flex gap-4 flex-wrap justify-center'>
+                {miniStats.map((stat, i) => (
+                  <div key={i} className='text-center px-5 py-3 rounded-xl' style={{
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.05)',
+                  }}>
+                    <div className='text-lg mb-1'>{stat.icon}</div>
+                    <div className='font-bold text-base' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#38BDF8' }}>
+                      {stat.value}
+                    </div>
+                    <div className='text-xs' style={{ color: '#475569' }}>{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {error && (
               <p className='mt-4 text-sm' style={{ color: '#f87171' }}>{error}</p>
@@ -182,26 +240,26 @@ function App() {
 
             {/* Sonuç */}
             {result && risk && (
-              <div className='mt-10 w-full pb-16' style={{ maxWidth: '640px' }}>
+              <div className='mt-8 w-full pb-16' style={{ maxWidth: '600px' }}>
                 <div className='rounded-2xl p-6' style={{
-                  background: 'rgba(255,255,255,0.03)',
+                  background: 'rgba(255,255,255,0.02)',
                   border: `1px solid ${
-                    result.risk_level === 'safe' ? 'rgba(34,197,94,0.3)' :
-                    result.risk_level === 'high' ? 'rgba(239,68,68,0.3)' :
-                    result.risk_level === 'medium' ? 'rgba(245,158,11,0.3)' :
-                    'rgba(132,204,22,0.3)'
+                    result.risk_level === 'safe' ? 'rgba(34,197,94,0.25)' :
+                    result.risk_level === 'high' ? 'rgba(239,68,68,0.25)' :
+                    result.risk_level === 'medium' ? 'rgba(245,158,11,0.25)' :
+                    'rgba(132,204,22,0.25)'
                   }`,
                   backdropFilter: 'blur(12px)'
                 }}>
                   <div className='flex items-center gap-4 mb-6'>
                     <span className='text-4xl'>{risk.icon}</span>
                     <div>
-                      <h2 className='font-bold text-xl' style={{ fontFamily: 'Space Grotesk, sans-serif', color: risk.text.replace('text-', '') }}>
+                      <h2 className='font-bold text-xl' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#f1f5f9' }}>
                         {risk.title}
                       </h2>
-                      <span className='text-xs font-semibold px-2 py-1 rounded-full' style={{
+                      <span className='text-xs font-medium px-2 py-1 rounded-full' style={{
                         background: 'rgba(255,255,255,0.05)',
-                        color: '#94a3b8'
+                        color: '#64748b'
                       }}>
                         {risk.badge}
                       </span>
@@ -215,7 +273,7 @@ function App() {
                       }}>
                         %{result.is_phishing ? result.confidence : (100 - result.confidence).toFixed(0)}
                       </div>
-                      <div className='text-xs' style={{ color: '#64748b' }}>
+                      <div className='text-xs' style={{ color: '#475569' }}>
                         {result.is_phishing ? 'Tehdit Skoru' : 'Güvenlik Skoru'}
                       </div>
                     </div>
@@ -223,7 +281,7 @@ function App() {
 
                   {result.explanations?.length > 0 && (
                     <div className='mb-5'>
-                      <h3 className='font-semibold mb-3 text-sm' style={{ color: '#94a3b8', fontFamily: 'Space Grotesk, sans-serif' }}>
+                      <h3 className='font-semibold mb-3 text-xs' style={{ color: '#64748b', fontFamily: 'Space Grotesk, sans-serif', letterSpacing: '0.05em' }}>
                         TESPİT EDİLEN RİSKLER
                       </h3>
                       <ul className='space-y-2'>
@@ -239,12 +297,13 @@ function App() {
 
                   {result.ai_explanation && (
                     <div className='rounded-xl p-4' style={{
-                      background: 'rgba(56,189,248,0.05)',
-                      border: '1px solid rgba(56,189,248,0.15)'
+                      background: 'rgba(56,189,248,0.04)',
+                      border: '1px solid rgba(56,189,248,0.12)'
                     }}>
-                      <h3 className='font-semibold mb-2 text-sm' style={{
+                      <h3 className='font-semibold mb-2 text-xs' style={{
                         color: '#38BDF8',
-                        fontFamily: 'Space Grotesk, sans-serif'
+                        fontFamily: 'Space Grotesk, sans-serif',
+                        letterSpacing: '0.05em'
                       }}>
                         🤖 YAPAY ZEKA ANALİZİ
                       </h3>
