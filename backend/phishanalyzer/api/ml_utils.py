@@ -106,7 +106,12 @@ def predict_url(url):
 
     prediction = model.predict(X)[0]
     probability = model.predict_proba(X)[0]
-    confidence = round(float(max(probability)) * 100, 2)
+
+    # Her zaman phishing olasılığını baz al
+    # probability[0] = phishing olasılığı
+    # probability[1] = güvenli olasılığı
+    confidence = round(float(probability[0]) * 100, 2)
+
     explanations = explain_prediction(url, features_dict)
     is_phishing = bool(prediction == 0)
     ai_explanation = generate_ai_explanation(url, explanations, is_phishing) if (explanations or is_phishing) else None
@@ -137,7 +142,6 @@ def extract_features(url):
     query = parsed.query
 
     features = {
-        # Mevcut özellikler
         'URLLength': len(url),
         'IsHTTPS': 1 if url.startswith('https') else 0,
         'NoOfSubDomain': url.count('.') - 1,
@@ -152,7 +156,6 @@ def extract_features(url):
         'Crypto': 1 if 'crypto' in url.lower() else 0,
         'DegitRatioInURL': sum(c.isdigit() for c in url) / len(url) if len(url) > 0 else 0,
         'NoOfAmpersandInURL': url.count('&'),
-        # Yeni özellikler
         'SpecialCharRatio': len(re.findall(r'[-_@!~]', url)) / len(url) if len(url) > 0 else 0,
         'DigitRatioInDomain': sum(c.isdigit() for c in domain) / len(domain) if len(domain) > 0 else 0,
         'SubdomainDepth': len(domain.split('.')) - 2 if len(domain.split('.')) > 2 else 0,

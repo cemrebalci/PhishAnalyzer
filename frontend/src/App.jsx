@@ -30,8 +30,8 @@ function App() {
   useEffect(() => {
     if (result) {
       const target = result.is_phishing
-        ? result.confidence
-        : parseFloat((100 - result.confidence).toFixed(0))
+      ? parseFloat(result.confidence)
+      : parseFloat((100 - result.confidence).toFixed(1))
       let start = 0
       const step = target / 40
       const timer = setInterval(() => {
