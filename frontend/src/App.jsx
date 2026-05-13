@@ -37,27 +37,46 @@ function App() {
 
   return (
     <div className='min-h-screen bg-gray-900 text-white'>
-      <nav className='bg-gray-800 p-4 flex gap-6 border-b border-gray-700'>
-        <button
-          onClick={() => setPage('home')}
-          className={`font-bold text-lg ${page === 'home' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'}`}
-        >
-          🛡️ Analiz
-        </button>
-        <button
-          onClick={() => setPage('dashboard')}
-          className={`font-bold text-lg ${page === 'dashboard' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'}`}
-        >
-          📊 Dashboard
-        </button>
+
+      {/* Navbar */}
+      <nav className='bg-gray-800 px-6 py-3 flex items-center justify-between border-b border-gray-700'>
+        <div className='flex items-center gap-3'>
+          <img
+            src='/pa-logo.jpg'
+            alt='PhishAnalyzer Logo'
+            className='w-10 h-10 rounded-full object-cover border-2 border-cyan-400'
+          />
+          <span className='text-cyan-400 font-bold text-xl'>PhishAnalyzer</span>
+        </div>
+        <div className='flex gap-6'>
+          <button
+            onClick={() => setPage('home')}
+            className={`font-bold text-lg ${page === 'home' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'}`}
+          >
+            🛡️ Analiz
+          </button>
+          <button
+            onClick={() => setPage('dashboard')}
+            className={`font-bold text-lg ${page === 'dashboard' ? 'text-cyan-400' : 'text-gray-400 hover:text-white'}`}
+          >
+            📊 Dashboard
+          </button>
+        </div>
       </nav>
 
       {page === 'dashboard' && <Dashboard />}
 
       {page === 'home' && (
         <div className='flex flex-col items-center pt-20 px-4'>
+
+          {/* Logo + Başlık */}
+          <img
+            src='/pa-logo.jpg'
+            alt='PhishAnalyzer Logo'
+            className='w-24 h-24 rounded-full object-cover border-4 border-cyan-400 mb-6 shadow-lg shadow-cyan-900'
+          />
           <h1 className='text-5xl font-bold text-cyan-400 mb-2'>
-            🛡️ PhishAnalyzer
+            PhishAnalyzer
           </h1>
           <p className='text-gray-400 mb-10 text-lg'>
             AI destekli phishing URL analiz platformu
