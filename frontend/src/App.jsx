@@ -19,12 +19,33 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [stats, setStats] = useState(null)
+  const [displayConfidence, setDisplayConfidence] = useState(0)
 
   useEffect(() => {
     axios.get('https://phishanalyzer-production.up.railway.app/api/dashboard/')
       .then(res => setStats(res.data))
       .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    if (result) {
+      const target = result.is_phishing
+        ? result.confidence
+        : parseFloat((100 - result.confidence).toFixed(0))
+      let start = 0
+      const step = target / 40
+      const timer = setInterval(() => {
+        start += step
+        if (start >= target) {
+          setDisplayConfidence(target)
+          clearInterval(timer)
+        } else {
+          setDisplayConfidence(Math.floor(start))
+        }
+      }, 30)
+      return () => clearInterval(timer)
+    }
+  }, [result])
 
   const miniStats = [
     { icon: '🔍', label: 'Toplam Tarama', value: stats ? `${stats.total}` : '...' },
@@ -282,9 +303,10 @@ function App() {
                         fontFamily: 'Space Grotesk, sans-serif',
                         color: result.risk_level === 'safe' ? '#22c55e' :
                                result.risk_level === 'high' ? '#ef4444' :
-                               result.risk_level === 'medium' ? '#f59e0b' : '#84cc16'
+                               result.risk_level === 'medium' ? '#f59e0b' : '#84cc16',
+                        transition: 'all 0.1s ease'
                       }}>
-                        %{result.is_phishing ? result.confidence : (100 - result.confidence).toFixed(0)}
+                        %{displayConfidence}
                       </div>
                       <div className='text-xs' style={{ color: '#475569' }}>
                         {result.is_phishing ? 'Tehdit Skoru' : 'Güvenlik Skoru'}
@@ -304,7 +326,7 @@ function App() {
                       }}>
                         🤖 YAPAY ZEKA ANALİZİ
                       </h3>
-                      <p className='text-sm leading-relaxed' style={{ color: '#94a3b8' }}>
+                      <p className='text-sm leading-7' style={{ color: '#94a3b8' }}>
                         {result.ai_explanation}
                       </p>
                     </div>
