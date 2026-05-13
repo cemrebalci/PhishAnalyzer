@@ -84,13 +84,13 @@ export default function Dashboard() {
             RİSK DAĞILIMI
           </h2>
           {data?.total > 0 ? (
-            <ResponsiveContainer width='100%' height={260}>
+            <ResponsiveContainer width='100%' height={300}>
               <PieChart>
                 <Pie
                   data={pieData}
                   cx='50%'
-                  cy='45%'
-                  outerRadius={85}
+                  cy='50%'
+                  outerRadius={80}
                   dataKey='value'
                   label={({ name, percent }) => `${name} %${(percent * 100).toFixed(0)}`}
                   labelLine={true}
