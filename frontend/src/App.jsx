@@ -10,7 +10,10 @@ const riskConfig = {
 }
 
 function App() {
-  const [page, setPage] = useState('home')
+  const [page, setPage] = useState(() => {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('page') === 'dashboard' ? 'dashboard' : 'home'
+  })
   const [url, setUrl] = useState('')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)

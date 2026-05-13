@@ -33,8 +33,17 @@
       cursor: pointer;
       font-size: 14px;
       margin-bottom: 8px;
+      display: block;
+      text-decoration: none;
+      text-align: center;
+      box-sizing: border-box;
     }
     .btn:hover { background: #06b6d4; }
+    .btn-dark {
+      background: #374151;
+      color: white;
+    }
+    .btn-dark:hover { background: #4b5563; }
   </style>
 </head>
 <body>
@@ -43,11 +52,20 @@
   <div class="status">
     ✅ Koruma aktif — her site otomatik analiz ediliyor
   </div>
-  <button class="btn" onclick="window.open('https://phish-analyzer.vercel.app', '_blank')">
+  <a class="btn" href="https://phish-analyzer.vercel.app" target="_blank">
     🌐 Web Platformunu Aç
-  </button>
-  <button class="btn" onclick="window.open('https://phish-analyzer.vercel.app', '_blank')" style="background: #374151; color: white;">
+  </a>
+  <a class="btn btn-dark" href="https://phish-analyzer.vercel.app/?page=dashboard" target="_blank">
     📊 Dashboard'u Aç
-  </button>
+  </a>
+
+  <script>
+    document.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault()
+        chrome.tabs.create({ url: a.href })
+      })
+    })
+  </script>
 </body>
 </html>
