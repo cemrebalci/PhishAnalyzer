@@ -136,7 +136,7 @@ function App() {
               style={{
                 width: '88px', height: '88px',
                 border: '2px solid rgba(56,189,248,0.4)',
-                boxShadow: '0 0 24px rgba(56,189,248,0.15)'
+                boxShadow: '0 0 40px rgba(56,189,248,0.4), 0 0 80px rgba(56,189,248,0.15)'
               }}
             />
 
