@@ -66,9 +66,26 @@ class DashboardView(APIView):
         for scan in recent_threats_qs:
             try:
                 explanations = eval(scan.explanation) if scan.explanation else []
-                first_reason = explanations[0] if explanations else 'Şüpheli URL yapısı'
+                if explanations:
+                    first_reason = explanations[0]
+                else:
+                    # URL'ye bakarak akıllı sebep üret
+                    url = scan.url
+                    if any(tld in url for tld in ['.xyz', '.tk', '.ml', '.ga', '.cf', '.site']):
+                        first_reason = 'Şüpheli domain uzantısı'
+                    elif url.startswith('http://'):
+                        first_reason = 'HTTPS kullanmıyor'
+                    elif len(url) > 100:
+                        first_reason = 'Uzun ve karmaşık URL yapısı'
+                    elif any(word in url.lower() for word in ['login', 'verify', 'secure', 'account', 'update']):
+                        first_reason = 'Kimlik avı anahtar kelimeleri içeriyor'
+                    elif any(word in url.lower() for word in ['paypal', 'google', 'amazon', 'apple', 'microsoft']):
+                        first_reason = 'Marka taklidi içeriyor'
+                    else:
+                        first_reason = 'Anormal URL yapısı tespit edildi'
             except:
-                first_reason = 'Şüpheli URL yapısı'
+                first_reason = 'Anormal URL yapısı tespit edildi'
+
             recent_threats.append({
                 'url': scan.url,
                 'confidence_score': scan.confidence_score,
