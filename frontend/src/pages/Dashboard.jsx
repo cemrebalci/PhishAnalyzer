@@ -188,7 +188,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div style={cardStyle}>
+      {/* Son 7 Gün */}
+      <div style={cardStyle} className='mb-8'>
         <h2 className='font-semibold mb-6' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
           SON 7 GÜN
         </h2>
@@ -217,6 +218,63 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Son Taramalar */}
+      <div style={cardStyle}>
+        <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+          SON TARAMALAR
+        </h2>
+        {!data?.recent_scans?.length ? (
+          <p style={{ color: '#475569' }}>Henüz tarama yapılmadı</p>
+        ) : (
+          <table className='w-full'>
+            <thead>
+              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <th className='text-left pb-3 text-xs' style={{ color: '#475569' }}>URL</th>
+                <th className='text-right pb-3 text-xs' style={{ color: '#475569' }}>RİSK</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data?.recent_scans?.map((scan, i) => (
+                <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <td className='py-3 text-sm' style={{ maxWidth: '300px' }}>
+                    <span
+                      title={scan.url}
+                      style={{
+                        color: '#cbd5e1',
+                        display: 'block',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        cursor: 'default',
+                      }}
+                    >
+                      {scan.url}
+                    </span>
+                  </td>
+                  <td className='py-3 text-right'>
+                    <span className='text-xs font-bold px-2 py-1 rounded-full' style={{
+                      background:
+                        scan.risk_level === 'safe' ? 'rgba(34,197,94,0.15)' :
+                        scan.risk_level === 'high' ? 'rgba(239,68,68,0.15)' :
+                        scan.risk_level === 'medium' ? 'rgba(245,158,11,0.15)' :
+                        'rgba(132,204,22,0.15)',
+                      color:
+                        scan.risk_level === 'safe' ? '#22c55e' :
+                        scan.risk_level === 'high' ? '#ef4444' :
+                        scan.risk_level === 'medium' ? '#f59e0b' : '#84cc16'
+                    }}>
+                      {scan.risk_level === 'safe' ? '🟢 Güvenli' :
+                       scan.risk_level === 'high' ? '🔴 Yüksek' :
+                       scan.risk_level === 'medium' ? '🟠 Orta' : '🟡 Düşük'}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   )

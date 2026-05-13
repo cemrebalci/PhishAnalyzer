@@ -69,7 +69,6 @@ class DashboardView(APIView):
                 if explanations:
                     first_reason = explanations[0]
                 else:
-                    # URL'ye bakarak akıllı sebep üret
                     url = scan.url
                     if any(tld in url for tld in ['.xyz', '.tk', '.ml', '.ga', '.cf', '.site']):
                         first_reason = 'Şüpheli domain uzantısı'
@@ -93,11 +92,27 @@ class DashboardView(APIView):
                 'reason': first_reason
             })
 
+        recent_scans_qs = scans.order_by('-scanned_at')[:10]
+        recent_scans = []
+        for scan in recent_scans_qs:
+            if scan.is_phishing:
+                risk_level = 'high' if scan.confidence_score >= 70 else 'medium' if scan.confidence_score >= 30 else 'low'
+            else:
+                risk_level = 'safe'
+            recent_scans.append({
+                'url': scan.url,
+                'confidence_score': scan.confidence_score,
+                'is_phishing': scan.is_phishing,
+                'risk_level': risk_level,
+                'scanned_at': scan.scanned_at,
+            })
+
         return Response({
             'total': total,
             'phishing': phishing,
             'safe': safe,
             'safe_percentage': round((safe / total * 100), 1) if total > 0 else 0,
             'daily': daily,
-            'recent_threats': recent_threats
+            'recent_threats': recent_threats,
+            'recent_scans': recent_scans,
         })
