@@ -115,7 +115,6 @@ function App() {
           position: 'relative',
         }}>
 
-          {/* Radial gradient */}
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
             background: 'radial-gradient(circle at 50% 0%, rgba(56,189,248,0.07), transparent 55%)',
@@ -130,7 +129,6 @@ function App() {
             alignItems: 'center',
           }}>
 
-            {/* Logo */}
             <img
               src='/pa-logo.jpg'
               alt='PhishAnalyzer Logo'
@@ -142,8 +140,7 @@ function App() {
               }}
             />
 
-            {/* Başlık */}
-            <h1 className='font-bold mb-3 text-center' style={{
+            <h1 className='font-bold mb-4 text-center' style={{
               fontFamily: 'Space Grotesk, sans-serif',
               fontSize: '3.5rem',
               letterSpacing: '-0.03em',
@@ -154,12 +151,13 @@ function App() {
             }}>
               PhishAnalyzer
             </h1>
-            <p className='mb-5 text-center' style={{ color: '#64748b', fontSize: '1rem', maxWidth: '440px', lineHeight: 1.6 }}>
+
+            <p className='mb-8 text-center' style={{ color: '#64748b', fontSize: '1rem', maxWidth: '440px', lineHeight: 1.6 }}>
               AI destekli phishing URL analiz platformu — Makine öğrenmesi ile gerçek zamanlı tehdit tespiti
             </p>
 
             {/* Mini badges */}
-            <div className='flex gap-2 mb-8 flex-wrap justify-center'>
+            <div className='flex gap-2 mb-10 flex-wrap justify-center'>
               {['🤖 AI Destekli', '⚡ Gerçek Zamanlı', '🔒 ML Modeli', '🌐 Chrome Eklentisi'].map((badge, i) => (
                 <span key={i} className='px-3 py-1 rounded-full text-xs font-medium' style={{
                   background: 'rgba(56,189,248,0.06)',
@@ -204,7 +202,7 @@ function App() {
               <button
                 onClick={handleScan}
                 disabled={loading}
-                className='w-full font-semibold text-base transition-all duration-200'
+                className='w-full font-semibold text-base'
                 style={{
                   background: loading ? '#164e63' : 'linear-gradient(180deg, #38BDF8, #06B6D4)',
                   border: 'none',
@@ -227,15 +225,17 @@ function App() {
             {!result && (
               <div className='flex gap-4 flex-wrap justify-center'>
                 {miniStats.map((stat, i) => (
-                  <div key={i} className='text-center px-5 py-3 rounded-xl' style={{
-                    background: 'rgba(255,255,255,0.02)',
-                    border: '1px solid rgba(255,255,255,0.05)',
+                  <div key={i} className='text-center px-6 py-4 rounded-xl' style={{
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    backdropFilter: 'blur(12px)',
+                    minWidth: '130px',
                   }}>
-                    <div className='text-lg mb-1'>{stat.icon}</div>
-                    <div className='font-bold text-base' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#38BDF8' }}>
+                    <div className='text-lg mb-2'>{stat.icon}</div>
+                    <div className='font-bold text-lg' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#38BDF8' }}>
                       {stat.value}
                     </div>
-                    <div className='text-xs' style={{ color: '#475569' }}>{stat.label}</div>
+                    <div className='text-xs mt-1' style={{ color: '#475569' }}>{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -245,7 +245,6 @@ function App() {
               <p className='mt-4 text-sm' style={{ color: '#f87171' }}>{error}</p>
             )}
 
-            {/* Sonuç */}
             {result && risk && (
               <div className='mt-8 w-full pb-16' style={{ maxWidth: '600px' }}>
                 <div className='rounded-2xl p-6' style={{

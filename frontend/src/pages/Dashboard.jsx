@@ -35,7 +35,7 @@ export default function Dashboard() {
 
   const cardStyle = {
     background: 'rgba(255,255,255,0.03)',
-    border: '1px solid rgba(255,255,255,0.06)',
+    border: '1px solid rgba(255,255,255,0.08)',
     borderRadius: '16px',
     padding: '24px',
     backdropFilter: 'blur(12px)',
@@ -48,29 +48,31 @@ export default function Dashboard() {
         <h1 className='font-bold mb-1' style={{
           fontFamily: 'Space Grotesk, sans-serif',
           fontSize: '2rem',
+          letterSpacing: '-0.02em',
           color: '#f1f5f9'
         }}>
-          Güvenlik Dashboard'u
+          Güvenlik Paneli
         </h1>
         <p style={{ color: '#475569', fontSize: '0.95rem' }}>
           Son 30 günün analiz özeti
         </p>
       </div>
 
+      {/* Özet Kartlar */}
       <div className='grid grid-cols-3 gap-5 mb-8'>
-        <div style={cardStyle}>
+        <div style={{ ...cardStyle }}>
           <p className='text-sm mb-3' style={{ color: '#64748b' }}>📊 Toplam Tarama</p>
           <p className='font-bold' style={{ fontSize: '2.5rem', fontFamily: 'Space Grotesk, sans-serif', color: '#f1f5f9' }}>
             {data?.total || 0}
           </p>
         </div>
-        <div style={{ ...cardStyle, border: '1px solid rgba(239,68,68,0.2)', background: 'rgba(239,68,68,0.05)' }}>
+        <div style={{ ...cardStyle, border: '1px solid rgba(239,68,68,0.25)', background: 'rgba(239,68,68,0.05)', boxShadow: '0 0 20px rgba(239,68,68,0.08)' }}>
           <p className='text-sm mb-3' style={{ color: '#64748b' }}>🚨 Phishing Tespit</p>
           <p className='font-bold' style={{ fontSize: '2.5rem', fontFamily: 'Space Grotesk, sans-serif', color: '#ef4444' }}>
             {data?.phishing || 0}
           </p>
         </div>
-        <div style={{ ...cardStyle, border: '1px solid rgba(34,197,94,0.2)', background: 'rgba(34,197,94,0.05)' }}>
+        <div style={{ ...cardStyle, border: '1px solid rgba(34,197,94,0.25)', background: 'rgba(34,197,94,0.05)', boxShadow: '0 0 20px rgba(34,197,94,0.08)' }}>
           <p className='text-sm mb-3' style={{ color: '#64748b' }}>🛡️ Güvenlik Oranı</p>
           <p className='font-bold' style={{ fontSize: '2.5rem', fontFamily: 'Space Grotesk, sans-serif', color: '#22c55e' }}>
             %{data?.safe_percentage || 0}
@@ -140,8 +142,20 @@ export default function Dashboard() {
               <tbody>
                 {data?.recent_threats?.map((threat, i) => (
                   <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                    <td className='py-3 text-sm' style={{ color: '#cbd5e1' }}>
-                      {threat.url.length > 28 ? threat.url.substring(0, 28) + '...' : threat.url}
+                    <td className='py-3 text-sm' style={{ maxWidth: '160px' }}>
+                      <span
+                        title={threat.url}
+                        style={{
+                          color: '#cbd5e1',
+                          display: 'block',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          cursor: 'default',
+                        }}
+                      >
+                        {threat.url}
+                      </span>
                     </td>
                     <td className='py-3 text-xs' style={{ color: '#f59e0b' }}>
                       {threat.reason || 'Şüpheli URL yapısı'}
