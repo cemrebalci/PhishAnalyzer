@@ -59,15 +59,16 @@ export default function Dashboard() {
         <div className='bg-gray-800 rounded-xl p-6 border border-gray-600'>
           <h2 className='text-xl font-bold text-cyan-400 mb-4'>🥧 Risk Dağılımı</h2>
           {data?.total > 0 ? (
-            <ResponsiveContainer width='100%' height={250}>
+            <ResponsiveContainer width='100%' height={280}>
               <PieChart>
                 <Pie
                   data={pieData}
                   cx='50%'
-                  cy='50%'
-                  outerRadius={90}
+                  cy='45%'
+                  outerRadius={80}
                   dataKey='value'
-                  label={({ name, percent }) => `${name} %${(percent * 100).toFixed(0)}`}
+                  label={({ percent }) => `%${(percent * 100).toFixed(0)}`}
+                  labelLine={false}
                 >
                   {pieData.map((entry, index) => (
                     <Cell key={index} fill={COLORS[index]} />
@@ -75,8 +76,15 @@ export default function Dashboard() {
                 </Pie>
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', color: 'white' }}
+                  formatter={(value, name) => [`${value} site`, name]}
                 />
-                <Legend />
+                <Legend
+                  verticalAlign='bottom'
+                  height={36}
+                  formatter={(value) => (
+                    <span style={{ color: value === 'Güvenli' ? '#10b981' : '#ef4444' }}>{value}</span>
+                  )}
+                />
               </PieChart>
             </ResponsiveContainer>
           ) : (
