@@ -31,7 +31,7 @@ export default function Dashboard() {
     { name: 'Güvenli', value: data?.safe || 0 },
     { name: 'Phishing', value: data?.phishing || 0 },
   ]
-  const COLORS = ['#22c55e', '#ef4444']
+  const COLORS = ['#16a34a', '#dc2626']
 
   const cardStyle = {
     background: 'rgba(255,255,255,0.03)',
