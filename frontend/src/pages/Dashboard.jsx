@@ -266,7 +266,17 @@ export default function Dashboard() {
                     </span>
                   </td>
                   <td className='py-3 text-xs' style={{ color: '#475569', whiteSpace: 'nowrap' }}>
-                    {timeAgo(scan.scanned_at)}
+                    <div className='flex items-center gap-2'>
+                      <span>{timeAgo(scan.scanned_at)}</span>
+                      {scan.count > 1 && (
+                        <span className='px-1.5 py-0.5 rounded-full text-xs' style={{
+                          background: 'rgba(255,255,255,0.08)',
+                          color: '#64748b'
+                        }}>
+                          x{scan.count}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className='py-3 text-right'>
                     <span className='text-xs font-bold px-2 py-1 rounded-full' style={{

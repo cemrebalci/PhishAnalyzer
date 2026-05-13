@@ -92,20 +92,26 @@ class DashboardView(APIView):
                 'reason': first_reason
             })
 
-        recent_scans_qs = scans.order_by('-scanned_at')[:10]
-        recent_scans = []
+        recent_scans_qs = scans.order_by('-scanned_at')[:50]
+        seen_urls = {}
         for scan in recent_scans_qs:
             if scan.is_phishing:
                 risk_level = 'high' if scan.confidence_score >= 70 else 'medium' if scan.confidence_score >= 30 else 'low'
             else:
                 risk_level = 'safe'
-            recent_scans.append({
-                'url': scan.url,
-                'confidence_score': scan.confidence_score,
-                'is_phishing': scan.is_phishing,
-                'risk_level': risk_level,
-                'scanned_at': scan.scanned_at,
-            })
+            if scan.url not in seen_urls:
+                seen_urls[scan.url] = {
+                    'url': scan.url,
+                    'confidence_score': scan.confidence_score,
+                    'is_phishing': scan.is_phishing,
+                    'risk_level': risk_level,
+                    'scanned_at': scan.scanned_at,
+                    'count': 1
+                }
+            else:
+                seen_urls[scan.url]['count'] += 1
+
+        recent_scans = list(seen_urls.values())[:10]
 
         return Response({
             'total': total,
