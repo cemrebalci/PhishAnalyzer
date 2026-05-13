@@ -42,7 +42,15 @@ export default function Dashboard() {
   }
 
   return (
-    <div className='min-h-screen text-white' style={{ background: '#0B1120', padding: '40px 32px' }}>
+    <div className='min-h-screen text-white' style={{
+      background: '#0B1120',
+      backgroundImage: `
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)
+      `,
+      backgroundSize: '80px 80px',
+      padding: '40px 32px'
+    }}>
 
       <div className='mb-10'>
         <h1 className='font-bold mb-1' style={{
