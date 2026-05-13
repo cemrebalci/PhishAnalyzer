@@ -34,6 +34,14 @@ export default function Dashboard() {
   const COLORS = ['#15803d', '#b91c1c']
   const maxDaily = Math.max(...(data?.daily?.map(d => d.total) || [1]))
 
+  const timeAgo = (dateStr) => {
+    const diff = Math.floor((new Date() - new Date(dateStr)) / 1000)
+    if (diff < 60) return `${diff} sn önce`
+    if (diff < 3600) return `${Math.floor(diff / 60)} dk önce`
+    if (diff < 86400) return `${Math.floor(diff / 3600)} sa önce`
+    return `${Math.floor(diff / 86400)} gün önce`
+  }
+
   const cardStyle = {
     background: 'rgba(255,255,255,0.03)',
     border: '1px solid rgba(255,255,255,0.08)',
@@ -226,19 +234,23 @@ export default function Dashboard() {
           SON TARAMALAR
         </h2>
         {!data?.recent_scans?.length ? (
-          <p style={{ color: '#475569' }}>Henüz tarama yapılmadı</p>
+          <div className='text-center py-8'>
+            <div className='text-3xl mb-2'>🔍</div>
+            <p style={{ color: '#475569' }}>Henüz tarama yapılmadı</p>
+          </div>
         ) : (
           <table className='w-full'>
             <thead>
               <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                 <th className='text-left pb-3 text-xs' style={{ color: '#475569' }}>URL</th>
+                <th className='text-left pb-3 text-xs' style={{ color: '#475569' }}>ZAMAN</th>
                 <th className='text-right pb-3 text-xs' style={{ color: '#475569' }}>RİSK</th>
               </tr>
             </thead>
             <tbody>
               {data?.recent_scans?.map((scan, i) => (
                 <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <td className='py-3 text-sm' style={{ maxWidth: '300px' }}>
+                  <td className='py-3 text-sm' style={{ maxWidth: '260px' }}>
                     <span
                       title={scan.url}
                       style={{
@@ -252,6 +264,9 @@ export default function Dashboard() {
                     >
                       {scan.url}
                     </span>
+                  </td>
+                  <td className='py-3 text-xs' style={{ color: '#475569', whiteSpace: 'nowrap' }}>
+                    {timeAgo(scan.scanned_at)}
                   </td>
                   <td className='py-3 text-right'>
                     <span className='text-xs font-bold px-2 py-1 rounded-full' style={{
