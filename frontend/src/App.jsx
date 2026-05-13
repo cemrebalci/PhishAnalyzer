@@ -185,7 +185,7 @@ function App() {
                     border: '1px solid rgba(255,255,255,0.08)',
                     borderRadius: '12px',
                     padding: '15px 16px 15px 44px',
-                    backdropFilter: 'blur(12px)',
+                    backdropFilter: 'none',
                     transition: 'border-color 0.2s, box-shadow 0.2s',
                     fontFamily: 'Inter, sans-serif',
                   }}
