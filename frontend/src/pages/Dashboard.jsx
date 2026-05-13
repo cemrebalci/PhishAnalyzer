@@ -32,6 +32,7 @@ export default function Dashboard() {
     { name: 'Phishing', value: data?.phishing || 0 },
   ]
   const COLORS = ['#15803d', '#b91c1c']
+  const maxDaily = Math.max(...(data?.daily?.map(d => d.total) || [1]))
 
   const cardStyle = {
     background: 'rgba(255,255,255,0.03)',
@@ -199,7 +200,7 @@ export default function Dashboard() {
                 <div
                   className='h-2 rounded-full transition-all'
                   style={{
-                    width: day.total > 0 ? `${Math.min((day.total / 10) * 100, 100)}%` : '0%',
+                    width: day.total > 0 ? `${Math.min((day.total / maxDaily) * 100, 100)}%` : '0%',
                     background: 'linear-gradient(90deg, #38BDF8, #06B6D4)'
                   }}
                 />
