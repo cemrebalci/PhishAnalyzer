@@ -92,7 +92,7 @@ export default function Dashboard() {
                   cy='50%'
                   outerRadius={80}
                   dataKey='value'
-                  label={({ name, percent }) => `${name} %${(percent * 100).toFixed(0)}`}
+                  label={({ percent }) => `%${(percent * 100).toFixed(0)}`}
                   labelLine={true}
                 >
                   {pieData.map((entry, index) => (
