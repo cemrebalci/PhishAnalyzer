@@ -20,20 +20,6 @@ const SkeletonLine = ({ width = '100%' }) => (
   }} />
 )
 
-const highlightText = (text) => {
-  const keywords = [
-    'HTTPS', 'HTTP', 'phishing', 'kimlik avı', 'sahte', 'tehlikeli',
-    'dolandırıcılık', 'şüpheli', 'zararlı', 'kötü niyetli', 'SSL',
-    'güvenli', 'güvensiz', 'risk', 'tehdit', 'engel'
-  ]
-  const parts = text.split(new RegExp(`(${keywords.join('|')})`, 'gi'))
-  return parts.map((part, i) =>
-    keywords.some(k => k.toLowerCase() === part.toLowerCase())
-      ? <span key={i} style={{ color: '#38BDF8', fontWeight: '600' }}>{part}</span>
-      : part
-  )
-}
-
 function App() {
   const [page, setPage] = useState(() => {
     const params = new URLSearchParams(window.location.search)
@@ -345,7 +331,7 @@ function App() {
                     </h3>
                     {result.ai_explanation ? (
                       <p className='text-sm leading-7' style={{ color: '#94a3b8' }}>
-                        {highlightText(result.ai_explanation)}
+                        {result.ai_explanation}
                       </p>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
