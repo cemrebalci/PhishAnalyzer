@@ -5,6 +5,7 @@ import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recha
 export default function Dashboard() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState('all')
 
   useEffect(() => {
     axios.get('https://phishanalyzer-production.up.railway.app/api/dashboard/')
@@ -42,6 +43,13 @@ export default function Dashboard() {
     return `${Math.floor(diff / 86400)} gün önce`
   }
 
+  const filteredScans = (data?.recent_scans || []).filter(scan => {
+    if (filter === 'all') return true
+    if (filter === 'danger') return scan.is_phishing
+    if (filter === 'safe') return !scan.is_phishing
+    return true
+  })
+
   const cardStyle = {
     background: 'rgba(255,255,255,0.03)',
     border: '1px solid rgba(255,255,255,0.08)',
@@ -49,6 +57,20 @@ export default function Dashboard() {
     padding: '24px',
     backdropFilter: 'blur(12px)',
   }
+
+  const filterBtn = (key, label, activeColor) => (
+    <button
+      onClick={() => setFilter(key)}
+      className='px-3 py-1 rounded-full text-xs font-semibold transition-all duration-200'
+      style={{
+        background: filter === key ? `${activeColor}22` : 'transparent',
+        color: filter === key ? activeColor : '#475569',
+        border: filter === key ? `1px solid ${activeColor}55` : '1px solid rgba(255,255,255,0.08)',
+      }}
+    >
+      {label}
+    </button>
+  )
 
   return (
     <div className='min-h-screen text-white' style={{
@@ -97,103 +119,48 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className='grid grid-cols-2 gap-5 mb-8'>
-        <div style={cardStyle}>
-          <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
-            RİSK DAĞILIMI
-          </h2>
-          {data?.total > 0 ? (
-            <ResponsiveContainer width='100%' height={300}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx='50%'
-                  cy='50%'
-                  outerRadius={80}
-                  dataKey='value'
-                  label={({ percent }) => `%${(percent * 100).toFixed(0)}`}
-                  labelLine={true}
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={index} fill={COLORS[index]} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#0f172a',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: '8px',
-                    color: 'white'
-                  }}
-                  formatter={(value, name) => [`${value} site`, name]}
-                />
-                <Legend
-                  verticalAlign='bottom'
-                  height={36}
-                  formatter={(value) => (
-                    <span style={{ color: value === 'Güvenli' ? '#22c55e' : '#ef4444', fontSize: '13px' }}>{value}</span>
-                  )}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <p style={{ color: '#475569' }}>Henüz veri yok</p>
-          )}
-        </div>
-
-        <div style={cardStyle}>
-          <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
-            SON TESPİT EDİLEN TEHDİTLER
-          </h2>
-          {!data?.recent_threats?.length ? (
-            <p style={{ color: '#475569' }}>Henüz tehdit tespit edilmedi</p>
-          ) : (
-            <table className='w-full'>
-              <thead>
-                <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                  <th className='text-left pb-3 text-xs' style={{ color: '#475569' }}>URL</th>
-                  <th className='text-left pb-3 text-xs' style={{ color: '#475569' }}>SEBEP</th>
-                  <th className='text-right pb-3 text-xs' style={{ color: '#475569' }}>RİSK</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data?.recent_threats?.map((threat, i) => (
-                  <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                    <td className='py-3 text-sm' style={{ maxWidth: '160px' }}>
-                      <span
-                        title={threat.url}
-                        style={{
-                          color: '#cbd5e1',
-                          display: 'block',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          cursor: 'default',
-                        }}
-                      >
-                        {threat.url}
-                      </span>
-                    </td>
-                    <td className='py-3 text-xs' style={{ color: '#f59e0b' }}>
-                      {threat.reason || 'Şüpheli URL yapısı'}
-                    </td>
-                    <td className='py-3 text-right'>
-                      <span className='text-xs font-bold px-2 py-1 rounded-full' style={{
-                        background: threat.confidence_score >= 70 ? 'rgba(239,68,68,0.15)' :
-                                    threat.confidence_score >= 30 ? 'rgba(245,158,11,0.15)' :
-                                    'rgba(132,204,22,0.15)',
-                        color: threat.confidence_score >= 70 ? '#ef4444' :
-                               threat.confidence_score >= 30 ? '#f59e0b' : '#84cc16'
-                      }}>
-                        %{threat.confidence_score}
-                      </span>
-                    </td>
-                  </tr>
+      {/* Pie Chart — tam genişlik */}
+      <div style={cardStyle} className='mb-8'>
+        <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+          RİSK DAĞILIMI
+        </h2>
+        {data?.total > 0 ? (
+          <ResponsiveContainer width='100%' height={280}>
+            <PieChart>
+              <Pie
+                data={pieData}
+                cx='50%'
+                cy='50%'
+                outerRadius={100}
+                dataKey='value'
+                label={({ percent }) => `%${(percent * 100).toFixed(0)}`}
+                labelLine={true}
+              >
+                {pieData.map((entry, index) => (
+                  <Cell key={index} fill={COLORS[index]} />
                 ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+              </Pie>
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#0f172a',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '8px',
+                  color: 'white'
+                }}
+                formatter={(value, name) => [`${value} site`, name]}
+              />
+              <Legend
+                verticalAlign='bottom'
+                height={36}
+                formatter={(value) => (
+                  <span style={{ color: value === 'Güvenli' ? '#22c55e' : '#ef4444', fontSize: '13px' }}>{value}</span>
+                )}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <p style={{ color: '#475569' }}>Henüz veri yok</p>
+        )}
       </div>
 
       {/* Son 7 Gün */}
@@ -228,15 +195,23 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Son Taramalar */}
+      {/* Son Taramalar — filtreli */}
       <div style={cardStyle}>
-        <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
-          SON TARAMALAR
-        </h2>
-        {!data?.recent_scans?.length ? (
+        <div className='flex items-center justify-between mb-4'>
+          <h2 className='font-semibold' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+            SON TARAMALAR
+          </h2>
+          <div className='flex gap-2'>
+            {filterBtn('all', '🔍 Tümü', '#94a3b8')}
+            {filterBtn('danger', '🔴 Tehlikeliler', '#ef4444')}
+            {filterBtn('safe', '🟢 Güvenliler', '#22c55e')}
+          </div>
+        </div>
+
+        {!filteredScans.length ? (
           <div className='text-center py-8'>
             <div className='text-3xl mb-2'>🔍</div>
-            <p style={{ color: '#475569' }}>Henüz tarama yapılmadı</p>
+            <p style={{ color: '#475569' }}>Bu filtreye uygun tarama bulunamadı</p>
           </div>
         ) : (
           <table className='w-full'>
@@ -248,7 +223,7 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {data?.recent_scans?.map((scan, i) => (
+              {filteredScans.map((scan, i) => (
                 <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <td className='py-3 text-sm' style={{ maxWidth: '260px' }}>
                     <span
