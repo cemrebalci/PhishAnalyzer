@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, Label } from 'recharts'
 
 export default function Dashboard() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+  const [hoveredRow, setHoveredRow] = useState(null)
 
   useEffect(() => {
     axios.get('https://phishanalyzer-production.up.railway.app/api/dashboard/')
@@ -65,12 +66,28 @@ export default function Dashboard() {
       style={{
         background: filter === key ? `${activeColor}22` : 'transparent',
         color: filter === key ? activeColor : '#475569',
-        border: filter === key ? `1px solid ${activeColor}55` : '1px solid rgba(255,255,255,0.08)',
+        border: filter === key ? `1px solid ${activeColor}88` : '1px solid rgba(255,255,255,0.08)',
+        boxShadow: filter === key ? `0 0 10px ${activeColor}33` : 'none',
       }}
     >
       {label}
     </button>
   )
+
+  // Donut chart ortasına toplam sayı yazan custom label
+  const DonutLabel = ({ viewBox }) => {
+    const { cx, cy } = viewBox
+    return (
+      <text x={cx} y={cy} textAnchor='middle' dominantBaseline='middle'>
+        <tspan x={cx} dy='-8' style={{ fontSize: '1.6rem', fontWeight: '700', fill: '#f1f5f9', fontFamily: 'Space Grotesk, sans-serif' }}>
+          {data?.total || 0}
+        </tspan>
+        <tspan x={cx} dy='24' style={{ fontSize: '0.7rem', fill: '#475569' }}>
+          toplam
+        </tspan>
+      </text>
+    )
+  }
 
   return (
     <div className='min-h-screen text-white' style={{
@@ -119,79 +136,84 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Pie Chart — tam genişlik */}
-      <div style={cardStyle} className='mb-8'>
-        <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
-          RİSK DAĞILIMI
-        </h2>
-        {data?.total > 0 ? (
-          <ResponsiveContainer width='100%' height={280}>
-            <PieChart>
-              <Pie
-                data={pieData}
-                cx='50%'
-                cy='50%'
-                outerRadius={100}
-                dataKey='value'
-                label={({ percent }) => `%${(percent * 100).toFixed(0)}`}
-                labelLine={true}
-              >
-                {pieData.map((entry, index) => (
-                  <Cell key={index} fill={COLORS[index]} />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#0f172a',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: '8px',
-                  color: 'white'
-                }}
-                formatter={(value, name) => [`${value} site`, name]}
-              />
-              <Legend
-                verticalAlign='bottom'
-                height={36}
-                formatter={(value) => (
-                  <span style={{ color: value === 'Güvenli' ? '#22c55e' : '#ef4444', fontSize: '13px' }}>{value}</span>
-                )}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        ) : (
-          <p style={{ color: '#475569' }}>Henüz veri yok</p>
-        )}
-      </div>
+      {/* Orta — İki Sütun: Donut Chart + Son 7 Gün */}
+      <div className='grid grid-cols-5 gap-5 mb-8'>
 
-      {/* Son 7 Gün */}
-      <div style={cardStyle} className='mb-8'>
-        <h2 className='font-semibold mb-6' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
-          SON 7 GÜN
-        </h2>
-        <div className='space-y-4'>
-          {data?.daily?.map((day, i) => (
-            <div key={i} className='flex items-center gap-4'>
-              <span className='text-xs w-16' style={{ color: '#475569' }}>{day.date}</span>
-              <div className='flex-1 rounded-full h-2' style={{ background: 'rgba(255,255,255,0.05)' }}>
-                <div
-                  className='h-2 rounded-full transition-all'
-                  style={{
-                    width: day.total > 0 ? `${Math.min((day.total / maxDaily) * 100, 100)}%` : '0%',
-                    background: 'linear-gradient(90deg, #38BDF8, #06B6D4)'
+        {/* Sol %40 — Donut Chart */}
+        <div style={cardStyle} className='col-span-2'>
+          <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+            RİSK DAĞILIMI
+          </h2>
+          {data?.total > 0 ? (
+            <ResponsiveContainer width='100%' height={260}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx='50%'
+                  cy='50%'
+                  innerRadius={65}
+                  outerRadius={95}
+                  dataKey='value'
+                  labelLine={false}
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={index} fill={COLORS[index]} />
+                  ))}
+                  <Label content={<DonutLabel />} position='center' />
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#0f172a',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: '8px',
+                    color: 'white'
                   }}
+                  formatter={(value, name) => [`${value} site`, name]}
                 />
+                <Legend
+                  verticalAlign='bottom'
+                  height={36}
+                  formatter={(value) => (
+                    <span style={{ color: value === 'Güvenli' ? '#22c55e' : '#ef4444', fontSize: '13px' }}>{value}</span>
+                  )}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <p style={{ color: '#475569' }}>Henüz veri yok</p>
+          )}
+        </div>
+
+        {/* Sağ %60 — Son 7 Gün */}
+        <div style={cardStyle} className='col-span-3'>
+          <h2 className='font-semibold mb-6' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+            SON 7 GÜN
+          </h2>
+          <div className='space-y-4'>
+            {data?.daily?.map((day, i) => (
+              <div key={i} className='flex items-center gap-4'>
+                <span className='text-xs w-16' style={{ color: '#475569' }}>{day.date}</span>
+                <div className='flex-1 rounded-full h-2' style={{ background: 'rgba(255,255,255,0.05)' }}>
+                  <div
+                    className='h-2 rounded-full transition-all'
+                    style={{
+                      width: day.total > 0 ? `${Math.min((day.total / maxDaily) * 100, 100)}%` : '0%',
+                      background: 'linear-gradient(90deg, #38BDF8, #06B6D4)'
+                    }}
+                  />
+                </div>
+                <span className='text-xs w-6 text-right' style={{ color: '#94a3b8' }}>{day.total}</span>
+                {day.phishing > 0 && (
+                  <span className='text-xs px-2 py-0.5 rounded-full' style={{
+                    background: 'rgba(239,68,68,0.15)',
+                    color: '#ef4444'
+                  }}>
+                    ⚠️ {day.phishing}
+                  </span>
+                )}
               </div>
-              <span className='text-xs w-6 text-right' style={{ color: '#94a3b8' }}>{day.total}</span>
-              {day.phishing > 0 && (
-                <span className='text-xs px-2 py-0.5 rounded-full' style={{
-                  background: 'rgba(239,68,68,0.15)',
-                  color: '#ef4444'
-                }}>
-                  ⚠️ {day.phishing}
-                </span>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
@@ -224,7 +246,17 @@ export default function Dashboard() {
             </thead>
             <tbody>
               {filteredScans.map((scan, i) => (
-                <tr key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                <tr
+                  key={i}
+                  onMouseEnter={() => setHoveredRow(i)}
+                  onMouseLeave={() => setHoveredRow(null)}
+                  style={{
+                    borderBottom: '1px solid rgba(255,255,255,0.04)',
+                    background: hoveredRow === i ? 'rgba(255,255,255,0.03)' : 'transparent',
+                    transition: 'background 0.15s ease',
+                    borderRadius: '8px',
+                  }}
+                >
                   <td className='py-3 text-sm' style={{ maxWidth: '260px' }}>
                     <span
                       title={scan.url}
