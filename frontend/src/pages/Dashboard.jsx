@@ -79,14 +79,14 @@ export default function Dashboard() {
     return (
       <text x={cx} y={cy} textAnchor='middle' dominantBaseline='middle'>
         <tspan
-          x={cx} dy='-10'
-          style={{ fontSize: '1.8rem', fontWeight: '700', fill: '#f1f5f9', fontFamily: 'Space Grotesk, sans-serif' }}
+          x={cx} dy='-12'
+          style={{ fontSize: '2rem', fontWeight: '700', fill: '#f1f5f9', fontFamily: 'Space Grotesk, sans-serif' }}
         >
           {data?.total || 0}
         </tspan>
         <tspan
-          x={cx} dy='26'
-          style={{ fontSize: '0.68rem', fill: '#475569', letterSpacing: '0.05em' }}
+          x={cx} dy='28'
+          style={{ fontSize: '0.65rem', fill: '#475569', letterSpacing: '0.08em' }}
         >
           TOPLAM
         </tspan>
@@ -143,59 +143,53 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Orta — İki Sütun: Donut Chart + Son 7 Gün */}
+      {/* Orta — İki Sütun */}
       <div className='grid grid-cols-5 gap-5 mb-8' style={{ alignItems: 'stretch' }}>
 
         {/* Sol %40 — Donut Chart */}
         <div style={{ ...cardStyle, display: 'flex', flexDirection: 'column' }} className='col-span-2'>
-          <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
+          <h2 className='font-semibold mb-2' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
             RİSK DAĞILIMI
           </h2>
           {data?.total > 0 ? (
-            <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  cx='50%'
-                  cy='45%'
-                  innerRadius={70}
-                  outerRadius={105}
-                  dataKey='value'
-                  labelLine={false}
-                  label={({ percent, x, y }) => (
-                    <text
-                      x={x} y={y}
-                      textAnchor='middle'
-                      dominantBaseline='middle'
-                      style={{ fontSize: '0.82rem', fontWeight: '700', fill: '#f1f5f9', fontFamily: 'Space Grotesk, sans-serif' }}
-                    >
-                      %{(percent * 100).toFixed(0)}
-                    </text>
-                  )}
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell key={index} fill={COLORS[index]} />
-                  ))}
-                  <Label content={<DonutLabel />} position='center' />
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#0f172a',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: '8px',
-                    color: 'white'
-                  }}
-                  formatter={(value, name) => [`${value} site`, name]}
-                />
-                <Legend
-                  verticalAlign='bottom'
-                  height={36}
-                  formatter={(value) => (
-                    <span style={{ color: value === 'Güvenli' ? '#22c55e' : '#ef4444', fontSize: '13px' }}>{value}</span>
-                  )}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx='50%'
+                    cy='50%'
+                    innerRadius={75}
+                    outerRadius={115}
+                    dataKey='value'
+                    labelLine={false}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={index} fill={COLORS[index]} />
+                    ))}
+                    <Label content={<DonutLabel />} position='center' />
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#0f172a',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      borderRadius: '8px',
+                      color: 'white'
+                    }}
+                    formatter={(value, name) => [`${value} site`, name]}
+                  />
+                  <Legend
+                    verticalAlign='bottom'
+                    height={40}
+                    formatter={(value, entry) => (
+                      <span style={{ color: value === 'Güvenli' ? '#22c55e' : '#ef4444', fontSize: '13px' }}>
+                        {value} — %{data?.total > 0 ? ((entry.payload.value / data.total) * 100).toFixed(0) : 0}
+                      </span>
+                    )}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           ) : (
             <p style={{ color: '#475569' }}>Henüz veri yok</p>
           )}
