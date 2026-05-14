@@ -74,20 +74,27 @@ export default function Dashboard() {
     </button>
   )
 
-  // Donut chart ortasına toplam sayı yazan custom label
   const DonutLabel = ({ viewBox }) => {
     const { cx, cy } = viewBox
     return (
       <text x={cx} y={cy} textAnchor='middle' dominantBaseline='middle'>
-        <tspan x={cx} dy='-8' style={{ fontSize: '1.6rem', fontWeight: '700', fill: '#f1f5f9', fontFamily: 'Space Grotesk, sans-serif' }}>
+        <tspan
+          x={cx} dy='-10'
+          style={{ fontSize: '1.8rem', fontWeight: '700', fill: '#f1f5f9', fontFamily: 'Space Grotesk, sans-serif' }}
+        >
           {data?.total || 0}
         </tspan>
-        <tspan x={cx} dy='24' style={{ fontSize: '0.7rem', fill: '#475569' }}>
-          toplam
+        <tspan
+          x={cx} dy='26'
+          style={{ fontSize: '0.68rem', fill: '#475569', letterSpacing: '0.05em' }}
+        >
+          TOPLAM
         </tspan>
       </text>
     )
   }
+
+  const CHART_HEIGHT = 320
 
   return (
     <div className='min-h-screen text-white' style={{
@@ -137,24 +144,34 @@ export default function Dashboard() {
       </div>
 
       {/* Orta — İki Sütun: Donut Chart + Son 7 Gün */}
-      <div className='grid grid-cols-5 gap-5 mb-8'>
+      <div className='grid grid-cols-5 gap-5 mb-8' style={{ alignItems: 'stretch' }}>
 
         {/* Sol %40 — Donut Chart */}
-        <div style={cardStyle} className='col-span-2'>
+        <div style={{ ...cardStyle, display: 'flex', flexDirection: 'column' }} className='col-span-2'>
           <h2 className='font-semibold mb-4' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
             RİSK DAĞILIMI
           </h2>
           {data?.total > 0 ? (
-            <ResponsiveContainer width='100%' height={260}>
+            <ResponsiveContainer width='100%' height={CHART_HEIGHT}>
               <PieChart>
                 <Pie
                   data={pieData}
                   cx='50%'
-                  cy='50%'
-                  innerRadius={65}
-                  outerRadius={95}
+                  cy='45%'
+                  innerRadius={70}
+                  outerRadius={105}
                   dataKey='value'
                   labelLine={false}
+                  label={({ percent, x, y }) => (
+                    <text
+                      x={x} y={y}
+                      textAnchor='middle'
+                      dominantBaseline='middle'
+                      style={{ fontSize: '0.82rem', fontWeight: '700', fill: '#f1f5f9', fontFamily: 'Space Grotesk, sans-serif' }}
+                    >
+                      %{(percent * 100).toFixed(0)}
+                    </text>
+                  )}
                 >
                   {pieData.map((entry, index) => (
                     <Cell key={index} fill={COLORS[index]} />
@@ -185,11 +202,11 @@ export default function Dashboard() {
         </div>
 
         {/* Sağ %60 — Son 7 Gün */}
-        <div style={cardStyle} className='col-span-3'>
+        <div style={{ ...cardStyle, display: 'flex', flexDirection: 'column' }} className='col-span-3'>
           <h2 className='font-semibold mb-6' style={{ fontFamily: 'Space Grotesk, sans-serif', color: '#94a3b8', fontSize: '0.85rem', letterSpacing: '0.05em' }}>
             SON 7 GÜN
           </h2>
-          <div className='space-y-4'>
+          <div className='flex-1 flex flex-col justify-center space-y-5'>
             {data?.daily?.map((day, i) => (
               <div key={i} className='flex items-center gap-4'>
                 <span className='text-xs w-16' style={{ color: '#475569' }}>{day.date}</span>
@@ -254,7 +271,6 @@ export default function Dashboard() {
                     borderBottom: '1px solid rgba(255,255,255,0.04)',
                     background: hoveredRow === i ? 'rgba(255,255,255,0.03)' : 'transparent',
                     transition: 'background 0.15s ease',
-                    borderRadius: '8px',
                   }}
                 >
                   <td className='py-3 text-sm' style={{ maxWidth: '260px' }}>
