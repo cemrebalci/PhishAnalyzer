@@ -318,29 +318,31 @@ function App() {
                     </div>
                   </div>
 
-                  <div className='rounded-xl p-4' style={{
-                    background: 'rgba(56,189,248,0.04)',
-                    border: '1px solid rgba(56,189,248,0.12)'
-                  }}>
-                    <h3 className='font-semibold mb-3 text-xs' style={{
-                      color: '#38BDF8',
-                      fontFamily: 'Space Grotesk, sans-serif',
-                      letterSpacing: '0.05em'
+                  {result.is_phishing && (
+                    <div className='rounded-xl p-4' style={{
+                      background: 'rgba(56,189,248,0.04)',
+                      border: '1px solid rgba(56,189,248,0.12)'
                     }}>
-                      🤖 YAPAY ZEKA ANALİZİ
-                    </h3>
-                    {result.ai_explanation ? (
-                      <p className='text-sm leading-7' style={{ color: '#94a3b8' }}>
-                        {result.ai_explanation}
-                      </p>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <SkeletonLine width='100%' />
-                        <SkeletonLine width='88%' />
-                        <SkeletonLine width='72%' />
-                      </div>
-                    )}
-                  </div>
+                      <h3 className='font-semibold mb-3 text-xs' style={{
+                        color: '#38BDF8',
+                        fontFamily: 'Space Grotesk, sans-serif',
+                        letterSpacing: '0.05em'
+                      }}>
+                        🤖 YAPAY ZEKA ANALİZİ
+                      </h3>
+                      {result.ai_explanation ? (
+                        <p className='text-sm leading-7' style={{ color: '#94a3b8' }}>
+                          {result.ai_explanation}
+                        </p>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <SkeletonLine width='100%' />
+                          <SkeletonLine width='88%' />
+                          <SkeletonLine width='72%' />
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                 </div>
               </div>
